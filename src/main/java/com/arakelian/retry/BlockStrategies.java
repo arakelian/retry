@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -23,14 +23,19 @@ import javax.annotation.concurrent.Immutable;
  */
 public final class BlockStrategies {
 
-    private static final BlockStrategy THREAD_SLEEP_STRATEGY = new ThreadSleepStrategy();
+    @Immutable
+    private static class ThreadSleepStrategy implements BlockStrategy {
 
-    private BlockStrategies() {
+        @Override
+        public void block(final long sleepTime) throws InterruptedException {
+            Thread.sleep(sleepTime);
+        }
     }
 
+    private static final BlockStrategy THREAD_SLEEP_STRATEGY = new ThreadSleepStrategy();
+
     /**
-     * Returns a block strategy that puts the current thread to sleep between
-     * retries.
+     * Returns a block strategy that puts the current thread to sleep between retries.
      *
      * @return a block strategy that puts the current thread to sleep between retries
      */
@@ -38,12 +43,6 @@ public final class BlockStrategies {
         return THREAD_SLEEP_STRATEGY;
     }
 
-    @Immutable
-    private static class ThreadSleepStrategy implements BlockStrategy {
-
-        @Override
-        public void block(long sleepTime) throws InterruptedException {
-            Thread.sleep(sleepTime);
-        }
+    private BlockStrategies() {
     }
 }

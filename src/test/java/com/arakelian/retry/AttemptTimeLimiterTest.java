@@ -14,47 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
-
-import com.google.common.util.concurrent.UncheckedTimeoutException;
-import org.junit.Assert;
-import org.junit.Test;
+package com.arakelian.retry;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author Jason Dunkelberger (dirkraft)
  */
 public class AttemptTimeLimiterTest {
 
-    Retryer<Void> r = RetryerBuilder.<Void>newBuilder()
-            .withAttemptTimeLimiter(AttemptTimeLimiters.<Void>fixedTimeLimit(1, TimeUnit.SECONDS))
-            .build();
-
-    @Test
-    public void testAttemptTimeLimit() throws ExecutionException, RetryException {
-        try {
-            r.call(new SleepyOut(0L));
-        } catch (ExecutionException e) {
-            Assert.fail("Should not timeout");
-        }
-
-        try {
-            r.call(new SleepyOut(10 * 1000L));
-            Assert.fail("Expected timeout exception");
-        } catch (ExecutionException e) {
-            // expected
-            Assert.assertEquals(UncheckedTimeoutException.class, e.getCause().getClass());
-        }
-    }
-
     static class SleepyOut implements Callable<Void> {
 
         final long sleepMs;
 
-        SleepyOut(long sleepMs) {
+        SleepyOut(final long sleepMs) {
             this.sleepMs = sleepMs;
         }
 
@@ -63,6 +42,22 @@ public class AttemptTimeLimiterTest {
             Thread.sleep(sleepMs);
             System.out.println("I'm awake now");
             return null;
+        }
+    }
+
+    Retryer<Void> r = RetryerBuilder.<Void> newBuilder()
+            .withAttemptTimeLimiter(AttemptTimeLimiters.<Void> fixedTimeLimit(1, TimeUnit.SECONDS)).build();
+
+    @Test
+    public void testAttemptTimeLimit() throws RetryException, ExecutionException {
+        r.call(new SleepyOut(0L));
+
+        try {
+            r.call(new SleepyOut(10 * 1000L));
+            Assert.fail("Expected timeout exception");
+        } catch (final ExecutionException e) {
+            // expected
+            Assert.assertEquals(TimeoutException.class, e.getCause().getClass());
         }
     }
 }

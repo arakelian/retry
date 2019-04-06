@@ -32,7 +32,7 @@
 
 ##1.0.2 - 2012-11-22
 * Added Gradle wrapper support
-* Updated top-level package to com.github.rholder.retry
+* Updated top-level package to com.arakelian.retry
 
 ##1.0.1 - 2012-08-29
 * Added Javadoc links

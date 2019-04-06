@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
+
+import com.google.common.annotations.Beta;
 
 /**
- * A strategy used to decide how long to sleep before retrying after a failed attempt.
- *
- * @author JB
+ * This listener provides callbacks for several events that occur when running code through a
+ * {@link Retryer} instance.
  */
-public interface WaitStrategy {
+@Beta
+public interface RetryListener {
 
     /**
-     * Returns the time, in milliseconds, to sleep before retrying.
+     * This method with fire no matter what the result is and before the rejection predicate and
+     * stop strategies are applied.
      *
-     * @param failedAttempt the previous failed {@code Attempt}
-     * @return the sleep time before next attempt
+     * @param attempt
+     *            the current {@link Attempt}
+     * @param <V>
+     *            the type returned by the retryer callable
      */
-    long computeSleepTime(Attempt failedAttempt);
+    <V> void onRetry(Attempt<V> attempt);
 }
