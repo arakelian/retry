@@ -17,52 +17,87 @@
 
 package com.github.rholder.retry;
 
-import com.google.common.base.Preconditions;
-
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
+import javax.annotation.Nonnull;
+
+import com.google.common.base.Preconditions;
+
 /**
- * A retryer, which executes a call, and retries it until it succeeds, or
- * a stop strategy decides to stop retrying. A wait strategy is used to sleep
- * between attempts. The strategy to decide if the call succeeds or not is
- * also configurable.
+ * A retryer, which executes a call, and retries it until it succeeds, or a stop strategy decides to
+ * stop retrying. A wait strategy is used to sleep between attempts. The strategy to decide if the
+ * call succeeds or not is also configurable.
  * <p>
- * A retryer can also wrap the callable into a RetryerCallable, which can be submitted to an executor.
+ * A retryer can also wrap the callable into a RetryerCallable, which can be submitted to an
+ * executor.
  * <p>
- * Retryer instances are better constructed with a {@link RetryerBuilder}. A retryer
- * is thread-safe, provided the arguments passed to its constructor are thread-safe.
+ * Retryer instances are better constructed with a {@link RetryerBuilder}. A retryer is thread-safe,
+ * provided the arguments passed to its constructor are thread-safe.
  *
  * @author JB
  * @author Jason Dunkelberger (dirkraft)
  */
 public final class Retryer {
+    /**
+     * A {@link Callable} which wraps another {@link Callable} in order to add retrying behavior
+     * from a given {@link Retryer} instance.
+     *
+     * @author JB
+     */
+    public static class RetryerCallable<T> implements Callable<T> {
+        private final Retryer retryer;
+        private final Callable<T> callable;
+
+        private RetryerCallable(final Retryer retryer, final Callable<T> callable) {
+            this.retryer = retryer;
+            this.callable = callable;
+        }
+
+        /**
+         * Makes the enclosing retryer call the wrapped callable.
+         *
+         * @see Retryer#call(Callable)
+         */
+        @Override
+        public T call() throws Exception {
+            return retryer.call(callable);
+        }
+    }
+
     private final StopStrategy stopStrategy;
     private final WaitStrategy waitStrategy;
     private final BlockStrategy blockStrategy;
     private final AttemptTimeLimiter attemptTimeLimiter;
     private final List<Predicate<Attempt<?>>> retryPredicates;
+
     private final Collection<RetryListener> listeners;
 
     /**
-     * @param attemptTimeLimiter to prevent from any single attempt from spinning infinitely
-     * @param stopStrategy       the strategy used to decide when the retryer must stop retrying
-     * @param waitStrategy       the strategy used to decide how much time to sleep between attempts
-     * @param blockStrategy      the strategy used to decide how to block between retry attempts;
-     *                           eg, Thread#sleep(), latches, etc.
-     * @param retryPredicates     the predicates used to decide if the attempt must be retried (without
-     *                           regard to the StopStrategy).
-     * @param listeners          collection of retry listeners
+     * @param attemptTimeLimiter
+     *            to prevent from any single attempt from spinning infinitely
+     * @param stopStrategy
+     *            the strategy used to decide when the retryer must stop retrying
+     * @param waitStrategy
+     *            the strategy used to decide how much time to sleep between attempts
+     * @param blockStrategy
+     *            the strategy used to decide how to block between retry attempts; eg,
+     *            Thread#sleep(), latches, etc.
+     * @param retryPredicates
+     *            the predicates used to decide if the attempt must be retried (without regard to
+     *            the StopStrategy).
+     * @param listeners
+     *            collection of retry listeners
      */
-    Retryer(@Nonnull AttemptTimeLimiter attemptTimeLimiter,
-            @Nonnull StopStrategy stopStrategy,
-            @Nonnull WaitStrategy waitStrategy,
-            @Nonnull BlockStrategy blockStrategy,
-            @Nonnull List<Predicate<Attempt<?>>> retryPredicates,
-            @Nonnull Collection<RetryListener> listeners) {
+    Retryer(
+            @Nonnull final AttemptTimeLimiter attemptTimeLimiter,
+            @Nonnull final StopStrategy stopStrategy,
+            @Nonnull final WaitStrategy waitStrategy,
+            @Nonnull final BlockStrategy blockStrategy,
+            @Nonnull final List<Predicate<Attempt<?>>> retryPredicates,
+            @Nonnull final Collection<RetryListener> listeners) {
         Preconditions.checkNotNull(attemptTimeLimiter, "timeLimiter may not be null");
         Preconditions.checkNotNull(stopStrategy, "stopStrategy may not be null");
         Preconditions.checkNotNull(waitStrategy, "waitStrategy may not be null");
@@ -79,32 +114,35 @@ public final class Retryer {
     }
 
     /**
-     * Executes the given callable, retrying if necessary. If the retry predicate
-     * accepts the attempt, the stop strategy is used to decide if a new attempt
-     * must be made. Then the wait strategy is used to decide how much time to sleep
-     * and a new attempt is made.
+     * Executes the given callable, retrying if necessary. If the retry predicate accepts the
+     * attempt, the stop strategy is used to decide if a new attempt must be made. Then the wait
+     * strategy is used to decide how much time to sleep and a new attempt is made.
      *
-     * @param callable the callable task to be executed
-     * @param <T>      the return type of the Callable
+     * @param callable
+     *            the callable task to be executed
+     * @param <T>
+     *            the return type of the Callable
      * @return the computed result of the given callable
-     * @throws RetryException       if all the attempts failed before the stop strategy decided to abort
-     * @throws InterruptedException If this thread is interrupted. This can happen because
-     *                              {@link Thread#sleep} is invoked between attempts
+     * @throws RetryException
+     *             if all the attempts failed before the stop strategy decided to abort
+     * @throws InterruptedException
+     *             If this thread is interrupted. This can happen because {@link Thread#sleep} is
+     *             invoked between attempts
      */
-    public <T> T call(Callable<T> callable) throws RetryException, InterruptedException {
-        long startTimeMillis = System.currentTimeMillis();
-        for (int attemptNumber = 1; ; attemptNumber++) {
+    public <T> T call(final Callable<T> callable) throws RetryException, InterruptedException {
+        final long startTimeMillis = System.currentTimeMillis();
+        for (int attemptNumber = 1;; attemptNumber++) {
             Attempt<T> attempt;
             try {
-                T result = attemptTimeLimiter.call(callable);
+                final T result = attemptTimeLimiter.call(callable);
                 attempt = new Attempt<>(result, attemptNumber, System.currentTimeMillis() - startTimeMillis);
-            } catch(InterruptedException e) {
+            } catch (final InterruptedException e) {
                 throw e;
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 attempt = new Attempt<>(t, attemptNumber, System.currentTimeMillis() - startTimeMillis);
             }
 
-            for (RetryListener listener : listeners) {
+            for (final RetryListener listener : listeners) {
                 listener.onRetry(attempt);
             }
 
@@ -115,26 +153,27 @@ public final class Retryer {
             if (stopStrategy.shouldStop(attempt)) {
                 throw new RetryException(attempt);
             } else {
-                long sleepTime = waitStrategy.computeSleepTime(attempt);
+                final long sleepTime = waitStrategy.computeSleepTime(attempt);
                 blockStrategy.block(sleepTime);
             }
         }
     }
 
     /**
-     * Executes the given runnable, retrying if necessary. If the retry predicate
-     * accepts the attempt, the stop strategy is used to decide if a new attempt
-     * must be made. Then the wait strategy is used to decide how much time to sleep
-     * and a new attempt is made.
+     * Executes the given runnable, retrying if necessary. If the retry predicate accepts the
+     * attempt, the stop strategy is used to decide if a new attempt must be made. Then the wait
+     * strategy is used to decide how much time to sleep and a new attempt is made.
      *
-     * @param runnable the runnable task to be executed
-     * @throws RetryException       if all the attempts failed before the stop strategy decided
-     *                              to abort
-     * @throws InterruptedException If this thread is interrupted. This can happen because
-     *                              {@link Thread#sleep} is invoked between attempts
+     * @param runnable
+     *            the runnable task to be executed
+     * @throws RetryException
+     *             if all the attempts failed before the stop strategy decided to abort
+     * @throws InterruptedException
+     *             If this thread is interrupted. This can happen because {@link Thread#sleep} is
+     *             invoked between attempts
      */
     @SuppressWarnings("WeakerAccess")
-    public void run(Runnable runnable) throws RetryException, InterruptedException {
+    public void run(final Runnable runnable) throws RetryException, InterruptedException {
         call(() -> {
             runnable.run();
             return null;
@@ -142,15 +181,35 @@ public final class Retryer {
     }
 
     /**
-     * Throw the Attempt's exception, if it has one, wrapped in a RetryException. Otherwise,
-     * return the attempt's result.
+     * Wraps the given {@link Callable} in a {@link RetryerCallable}, which can be submitted to an
+     * executor. The returned {@link RetryerCallable} uses this {@link Retryer} instance to call the
+     * given {@link Callable}.
      *
-     * @param attempt An attempt that was made by invoking the call
-     * @param <T>     The type of the attempt
-     * @return The result of the attempt
-     * @throws RetryException If the attempt has an exception
+     * @param callable
+     *            the callable to wrap
+     * @param <T>
+     *            the return type of the Callable
+     * @return a {@link RetryerCallable} that behaves like the given {@link Callable} with retry
+     *         behavior defined by this {@link Retryer}
      */
-    private <T> T getOrThrow(Attempt<T> attempt) throws RetryException {
+    @SuppressWarnings("WeakerAccess")
+    public <T> RetryerCallable<T> wrap(final Callable<T> callable) {
+        return new RetryerCallable<>(this, callable);
+    }
+
+    /**
+     * Throw the Attempt's exception, if it has one, wrapped in a RetryException. Otherwise, return
+     * the attempt's result.
+     *
+     * @param attempt
+     *            An attempt that was made by invoking the call
+     * @param <T>
+     *            The type of the attempt
+     * @return The result of the attempt
+     * @throws RetryException
+     *             If the attempt has an exception
+     */
+    private <T> T getOrThrow(final Attempt<T> attempt) throws RetryException {
         if (attempt.hasException()) {
             throw new RetryException(attempt);
         }
@@ -158,58 +217,18 @@ public final class Retryer {
     }
 
     /**
-     * Applies the retry predicates to the attempt, in order, until either one
-     * predicate returns true or all predicates return false.
+     * Applies the retry predicates to the attempt, in order, until either one predicate returns
+     * true or all predicates return false.
      *
-     * @param attempt The attempt made by invoking the call
+     * @param attempt
+     *            The attempt made by invoking the call
      */
-    private boolean shouldRetry(Attempt<?> attempt) {
-        for (Predicate<Attempt<?>> predicate : retryPredicates) {
+    private boolean shouldRetry(final Attempt<?> attempt) {
+        for (final Predicate<Attempt<?>> predicate : retryPredicates) {
             if (predicate.test(attempt)) {
                 return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Wraps the given {@link Callable} in a {@link RetryerCallable}, which can
-     * be submitted to an executor. The returned {@link RetryerCallable} uses
-     * this {@link Retryer} instance to call the given {@link Callable}.
-     *
-     * @param callable the callable to wrap
-     * @param <T>      the return type of the Callable
-     * @return a {@link RetryerCallable} that behaves like the given {@link Callable} with retry behavior defined by this {@link Retryer}
-     */
-    @SuppressWarnings("WeakerAccess")
-    public <T> RetryerCallable<T> wrap(Callable<T> callable) {
-        return new RetryerCallable<>(this, callable);
-    }
-
-    /**
-     * A {@link Callable} which wraps another {@link Callable} in order to add
-     * retrying behavior from a given {@link Retryer} instance.
-     *
-     * @author JB
-     */
-    public static class RetryerCallable<T> implements Callable<T> {
-        private Retryer retryer;
-        private Callable<T> callable;
-
-        private RetryerCallable(Retryer retryer,
-                                Callable<T> callable) {
-            this.retryer = retryer;
-            this.callable = callable;
-        }
-
-        /**
-         * Makes the enclosing retryer call the wrapped callable.
-         *
-         * @see Retryer#call(Callable)
-         */
-        @Override
-        public T call() throws Exception {
-            return retryer.call(callable);
-        }
     }
 }

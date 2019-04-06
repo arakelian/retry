@@ -15,35 +15,33 @@
  */
 package com.github.rholder.retry;
 
-import com.google.common.collect.Sets;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+
+import com.google.common.collect.Sets;
 
 public class AttemptTimeLimitersTest {
 
     @Test
     public void testFixedTimeLimitWithNoExecutorReusesThreads() throws Exception {
-        Set<Long> threadsUsed = Collections.synchronizedSet(Sets.newHashSet());
-        Callable<Void> callable = () -> {
+        final Set<Long> threadsUsed = Collections.synchronizedSet(Sets.newHashSet());
+        final Callable<Void> callable = () -> {
             threadsUsed.add(Thread.currentThread().getId());
             return null;
         };
 
-        int iterations = 20;
+        final int iterations = 20;
         for (int i = 0; i < iterations; i++) {
-            AttemptTimeLimiter timeLimiter =
-                AttemptTimeLimiters.fixedTimeLimit(1, TimeUnit.SECONDS);
+            final AttemptTimeLimiter timeLimiter = AttemptTimeLimiters.fixedTimeLimit(1, TimeUnit.SECONDS);
             timeLimiter.call(callable);
         }
-        assertTrue("Should have used less than " + iterations +
-            " threads", threadsUsed.size() < iterations);
+        assertTrue("Should have used less than " + iterations + " threads", threadsUsed.size() < iterations);
     }
 
 }

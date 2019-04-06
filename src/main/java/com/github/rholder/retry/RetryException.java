@@ -21,9 +21,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * An exception indicating that none of the attempts of the {@link Retryer}
- * succeeded. If the last {@link Attempt} resulted in an Exception, it is set as
- * the cause of the {@link RetryException}.
+ * An exception indicating that none of the attempts of the {@link Retryer} succeeded. If the last
+ * {@link Attempt} resulted in an Exception, it is set as the cause of the {@link RetryException}.
  *
  * @author JB
  */
@@ -34,36 +33,27 @@ public final class RetryException extends Exception {
     private final Attempt<?> lastFailedAttempt;
 
     /**
-     * If the last {@link Attempt} had an Exception, ensure it is available in
-     * the stack trace.
+     * If the last {@link Attempt} had an Exception, ensure it is available in the stack trace.
      *
-     * @param attempt what happened the last time we failed
+     * @param message
+     *            Exception description to be added to the stack trace
+     * @param attempt
+     *            what happened the last time we failed
      */
-    RetryException(@Nonnull Attempt<?> attempt) {
-        this("Retrying failed to complete successfully after " +
-                        attempt.getAttemptNumber() + " attempts.",
-                attempt);
-    }
-
-    /**
-     * If the last {@link Attempt} had an Exception, ensure it is available in
-     * the stack trace.
-     *
-     * @param message Exception description to be added to the stack trace
-     * @param attempt what happened the last time we failed
-     */
-    private RetryException(String message, Attempt<?> attempt) {
+    private RetryException(final String message, final Attempt<?> attempt) {
         super(message, attempt.hasException() ? attempt.getException() : null);
         this.lastFailedAttempt = attempt;
     }
 
     /**
-     * Returns the number of failed attempts
+     * If the last {@link Attempt} had an Exception, ensure it is available in the stack trace.
      *
-     * @return the number of failed attempts
+     * @param attempt
+     *            what happened the last time we failed
      */
-    public int getNumberOfFailedAttempts() {
-        return lastFailedAttempt.getAttemptNumber();
+    RetryException(@Nonnull final Attempt<?> attempt) {
+        this("Retrying failed to complete successfully after " + attempt.getAttemptNumber() + " attempts.",
+                attempt);
     }
 
     /**
@@ -73,5 +63,14 @@ public final class RetryException extends Exception {
      */
     public Attempt<?> getLastFailedAttempt() {
         return lastFailedAttempt;
+    }
+
+    /**
+     * Returns the number of failed attempts
+     *
+     * @return the number of failed attempts
+     */
+    public int getNumberOfFailedAttempts() {
+        return lastFailedAttempt.getAttemptNumber();
     }
 }

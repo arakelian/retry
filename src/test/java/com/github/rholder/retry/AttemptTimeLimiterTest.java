@@ -17,41 +17,22 @@
 
 package com.github.rholder.retry;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author Jason Dunkelberger (dirkraft)
  */
 public class AttemptTimeLimiterTest {
 
-    private final Retryer r = RetryerBuilder.newBuilder()
-            .withAttemptTimeLimiter(AttemptTimeLimiters.fixedTimeLimit(1, TimeUnit.SECONDS))
-            .build();
-
-    @Test
-    public void testAttemptTimeLimit() throws Exception {
-        try {
-            r.call(new SleepyOut(0L));
-        } catch (Exception e) {
-            Assert.fail("Should not timeout");
-        }
-
-        try {
-            r.call(new SleepyOut(10 * 1000L));
-            Assert.fail("Expected timeout exception");
-        } catch (RetryException ignored) {
-        }
-    }
-
     static class SleepyOut implements Callable<Void> {
 
         final long sleepMs;
 
-        SleepyOut(long sleepMs) {
+        SleepyOut(final long sleepMs) {
             this.sleepMs = sleepMs;
         }
 
@@ -59,6 +40,24 @@ public class AttemptTimeLimiterTest {
         public Void call() throws Exception {
             Thread.sleep(sleepMs);
             return null;
+        }
+    }
+
+    private final Retryer r = RetryerBuilder.newBuilder()
+            .withAttemptTimeLimiter(AttemptTimeLimiters.fixedTimeLimit(1, TimeUnit.SECONDS)).build();
+
+    @Test
+    public void testAttemptTimeLimit() throws Exception {
+        try {
+            r.call(new SleepyOut(0L));
+        } catch (final Exception e) {
+            Assert.fail("Should not timeout");
+        }
+
+        try {
+            r.call(new SleepyOut(10 * 1000L));
+            Assert.fail("Expected timeout exception");
+        } catch (final RetryException ignored) {
         }
     }
 }

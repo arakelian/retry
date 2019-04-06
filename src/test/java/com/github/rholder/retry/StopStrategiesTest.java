@@ -17,13 +17,13 @@
 
 package com.github.rholder.retry;
 
-import org.junit.Test;
-
-import java.util.concurrent.TimeUnit;
-
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
 
 public class StopStrategiesTest {
 
@@ -41,12 +41,9 @@ public class StopStrategiesTest {
 
     @Test
     public void testStopAfterDelayWithMilliseconds() {
-        assertFalse(StopStrategies.stopAfterDelay(1000, MILLISECONDS)
-            .shouldStop(failedAttempt(2, 999L)));
-        assertTrue(StopStrategies.stopAfterDelay(1000, MILLISECONDS)
-            .shouldStop(failedAttempt(2, 1000L)));
-        assertTrue(StopStrategies.stopAfterDelay(1000, MILLISECONDS)
-            .shouldStop(failedAttempt(2, 1001L)));
+        assertFalse(StopStrategies.stopAfterDelay(1000, MILLISECONDS).shouldStop(failedAttempt(2, 999L)));
+        assertTrue(StopStrategies.stopAfterDelay(1000, MILLISECONDS).shouldStop(failedAttempt(2, 1000L)));
+        assertTrue(StopStrategies.stopAfterDelay(1000, MILLISECONDS).shouldStop(failedAttempt(2, 1001L)));
     }
 
     @Test
@@ -56,7 +53,7 @@ public class StopStrategiesTest {
         assertTrue(StopStrategies.stopAfterDelay(1, TimeUnit.SECONDS).shouldStop(failedAttempt(2, 1001L)));
     }
 
-    private Attempt<Boolean> failedAttempt(int attemptNumber, long delaySinceFirstAttempt) {
+    private Attempt<Boolean> failedAttempt(final int attemptNumber, final long delaySinceFirstAttempt) {
         return new Attempt<>(new RuntimeException(), attemptNumber, delaySinceFirstAttempt);
     }
 }

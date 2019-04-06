@@ -16,330 +16,312 @@
 
 package com.github.rholder.retry;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class RetryerTest {
 
-  @ParameterizedTest
-  @MethodSource("checkedAndUnchecked")
-  void testCallThrowsWithNoRetryOnException(Class<? extends Throwable> throwable) throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder().build();
-    Thrower thrower = new Thrower(throwable, 5);
-    try {
-      retryer.call(thrower);
-      fail("Should have thrown");
-    } catch (RetryException e) {
-      assertSame(e.getCause().getClass(), throwable);
-    }
-    assertEquals(1, thrower.invocations);
-  }
+    /**
+     * Callable that throws an exception on a specified attempt (indexed starting with 1). Calls
+     * before the interrupt attempt throw an Exception.
+     */
+    private class Interrupter implements Callable<Void>, Runnable {
 
-  @ParameterizedTest
-  @MethodSource("unchecked")
-  void testRunThrowsWithNoRetryOnException(Class<? extends Throwable> throwable) throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder().build();
-    Thrower thrower = new Thrower(throwable, 5);
-    try {
-      retryer.run(thrower);
-      fail("Should have thrown");
-    } catch (RetryException e) {
-      assertSame(e.getCause().getClass(), throwable);
-    }
-    assertEquals(1, thrower.invocations);
-  }
+        private final int interruptAttempt;
 
-  @ParameterizedTest
-  @MethodSource("checkedAndUnchecked")
-  void testCallThrowsWithRetryOnException(Class<? extends Throwable> throwable) throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(Throwable.class)
-        .build();
-    Thrower thrower = new Thrower(throwable, 5);
-    retryer.call(thrower);
-    assertEquals(5, thrower.invocations);
-  }
+        private int invocations;
 
-  @ParameterizedTest
-  @MethodSource("unchecked")
-  void testRunThrowsWithRetryOnException(Class<? extends Throwable> throwable) throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(Throwable.class)
-        .build();
-    Thrower thrower = new Thrower(throwable, 5);
-    retryer.run(thrower);
-    assertEquals(5, thrower.invocations);
-  }
+        Interrupter(final int interruptAttempt) {
+            this.interruptAttempt = interruptAttempt;
+        }
 
-  @ParameterizedTest
-  @MethodSource("checkedAndUnchecked")
-  void testCallThrowsSubclassWithRetryOnException(Class<? extends Throwable> throwable) throws Exception {
-    @SuppressWarnings("unchecked")
-    Class<? extends Throwable> superclass = (Class<? extends Throwable>) throwable.getSuperclass();
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(superclass)
-        .build();
-    Thrower thrower = new Thrower(throwable, 5);
-    retryer.call(thrower);
-    assertEquals(5, thrower.invocations);
-  }
+        @Override
+        public Void call() throws InterruptedException {
+            invocations++;
+            if (invocations == interruptAttempt) {
+                throw new InterruptedException("Interrupted invocation " + invocations);
+            } else {
+                throw new RuntimeException("Throwing on invocaion " + invocations);
+            }
+        }
 
-  @ParameterizedTest
-  @MethodSource("unchecked")
-  void testRunThrowsSubclassWithRetryOnException(Class<? extends Throwable> throwable) throws Exception {
-    @SuppressWarnings("unchecked")
-    Class<? extends Throwable> superclass = (Class<? extends Throwable>) throwable.getSuperclass();
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(superclass)
-        .build();
-    Thrower thrower = new Thrower(throwable, 5);
-    retryer.run(thrower);
-    assertEquals(5, thrower.invocations);
-  }
+        @Override
+        public void run() throws RuntimeException {
+            try {
+                call();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
 
-  @ParameterizedTest
-  @MethodSource("checkedAndUnchecked")
-  void testCallThrowsWhenRetriesAreStopped(Class<? extends Throwable> throwable) throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(throwable)
-        .withStopStrategy(StopStrategies.stopAfterAttempt(3))
-        .build();
-    Thrower thrower = new Thrower(throwable, 5);
-    try {
-      retryer.call(thrower);
-      fail("Should have thrown");
-    } catch (RetryException e) {
-      assertSame(e.getCause().getClass(), throwable);
-    }
-    assertEquals(3, thrower.invocations);
-  }
-
-  @ParameterizedTest
-  @MethodSource("unchecked")
-  void testRunThrowsWhenRetriesAreStopped(Class<? extends Throwable> throwable) throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(throwable)
-        .withStopStrategy(StopStrategies.stopAfterAttempt(3))
-        .build();
-    Thrower thrower = new Thrower(throwable, 5);
-    try {
-      retryer.run(thrower);
-      fail("Should have thrown");
-    } catch (RetryException e) {
-      assertSame(e.getCause().getClass(), throwable);
-    }
-    assertEquals(3, thrower.invocations);
-  }
-
-  @Test
-  void testCallThatIsInterrupted() throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-            .retryIfRuntimeException()
-            .withStopStrategy(StopStrategies.stopAfterAttempt(10))
-            .build();
-    Interrupter thrower = new Interrupter(4);
-    boolean interrupted = false;
-    try {
-      retryer.call(thrower);
-      fail("Should have thrown");
-    } catch(InterruptedException ignored) {
-      interrupted = true;
-    } catch(Exception e) {
-      System.out.println(e);
     }
 
-    //noinspection ConstantConditions
-    assertTrue(interrupted);
-    assertEquals(4, thrower.invocations);
-  }
+    /**
+     * BlockStrategy that interrupts the thread
+     */
+    private class InterruptingBlockStrategy implements BlockStrategy {
 
-  @Test
-  void testRunThatIsInterrupted() throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-            .retryIfRuntimeException()
-            .withStopStrategy(StopStrategies.stopAfterAttempt(10))
-            .build();
-    Interrupter thrower = new Interrupter(4);
-    boolean interrupted = false;
-    try {
-      retryer.run(thrower);
-      fail("Should have thrown");
-    } catch(InterruptedException ignored) {
-      interrupted = true;
+        private final int invocationToInterrupt;
+
+        private int currentInvocation;
+
+        InterruptingBlockStrategy(final int invocationToInterrupt) {
+            this.invocationToInterrupt = invocationToInterrupt;
+        }
+
+        @Override
+        public void block(final long sleepTime) throws InterruptedException {
+            ++currentInvocation;
+            if (currentInvocation == invocationToInterrupt) {
+                throw new InterruptedException("Block strategy interrupted itself");
+            } else {
+                Thread.sleep(sleepTime);
+            }
+        }
     }
 
-    //noinspection ConstantConditions
-    assertTrue(interrupted);
-    assertEquals(4, thrower.invocations);
-  }
+    private class Thrower implements Callable<Void>, Runnable {
 
-  @Test
-  public void testCallWhenBlockerIsInterrupted() throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfException()
-        .withStopStrategy(StopStrategies.stopAfterAttempt(10))
-        .withBlockStrategy(new InterruptingBlockStrategy(3))
-        .build();
-    Thrower thrower = new Thrower(Exception.class, 5);
-    boolean interrupted = false;
-    try {
-      retryer.call(thrower);
-      fail("Should have thrown");
-    } catch (InterruptedException e) {
-      interrupted = true;
-    }
-    //noinspection ConstantConditions
-    assertTrue(interrupted);
-    assertEquals(3, thrower.invocations);
-  }
+        private final Class<? extends Throwable> throwableType;
 
-  @Test
-  public void testRunWhenBlockerIsInterrupted() throws Exception {
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfException()
-        .withStopStrategy(StopStrategies.stopAfterAttempt(10))
-        .withBlockStrategy(new InterruptingBlockStrategy(3))
-        .build();
-    Thrower thrower = new Thrower(Exception.class, 5);
-    boolean interrupted = false;
-    try {
-      retryer.run(thrower);
-      fail("Should have thrown");
-    } catch (InterruptedException e) {
-      interrupted = true;
-    }
-    //noinspection ConstantConditions
-    assertTrue(interrupted);
-    assertEquals(3, thrower.invocations);
-  }
+        private final int successAttempt;
 
-  private static Stream<Arguments> checkedAndUnchecked() {
-    return Stream.concat(unchecked(), Stream.of(
-        Arguments.of(Exception.class),
-        Arguments.of(IOException.class)
-    ));
-  }
+        private int invocations = 0;
 
-  private static Stream<Arguments> unchecked() {
-    return Stream.of(
-        Arguments.of(Error.class),
-        Arguments.of(RuntimeException.class),
-        Arguments.of(NullPointerException.class)
-    );
-  }
+        Thrower(final Class<? extends Throwable> throwableType, final int successAttempt) {
+            this.throwableType = throwableType;
+            this.successAttempt = successAttempt;
+        }
 
-  /**
-   * BlockStrategy that interrupts the thread
-   */
-  private class InterruptingBlockStrategy implements BlockStrategy {
+        @Override
+        public Void call() throws Exception {
+            invocations++;
+            if (invocations == successAttempt) {
+                return null;
+            }
+            if (Error.class.isAssignableFrom(throwableType)) {
+                throw (Error) throwable();
+            }
+            throw (Exception) throwable();
+        }
 
-    private final int invocationToInterrupt;
+        @Override
+        public void run() {
+            invocations++;
+            if (invocations == successAttempt) {
+                return;
+            }
+            if (Error.class.isAssignableFrom(throwableType)) {
+                throw (Error) throwable();
+            }
+            throw (RuntimeException) throwable();
+        }
 
-    private int currentInvocation;
-
-    InterruptingBlockStrategy(int invocationToInterrupt) {
-      this.invocationToInterrupt = invocationToInterrupt;
+        private Throwable throwable() {
+            try {
+                return throwableType.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("Failed to create throwable of type " + throwableType);
+            }
+        }
     }
 
-    @Override
-    public void block(long sleepTime) throws InterruptedException {
-      ++currentInvocation;
-      if (currentInvocation == invocationToInterrupt) {
-        throw new InterruptedException("Block strategy interrupted itself");
-      } else {
-        Thread.sleep(sleepTime);
-      }
-    }
-  }
-
-  /**
-   * Callable that throws an exception on a specified attempt (indexed starting with 1).
-   * Calls before the interrupt attempt throw an Exception.
-   */
-  private class Interrupter implements Callable<Void>, Runnable {
-
-    private final int interruptAttempt;
-
-    private int invocations;
-
-    Interrupter(int interruptAttempt) {
-      this.interruptAttempt = interruptAttempt;
+    private static Stream<Arguments> checkedAndUnchecked() {
+        return Stream.concat(
+                unchecked(),
+                Stream.of(Arguments.of(Exception.class), Arguments.of(IOException.class)));
     }
 
-    @Override
-    public Void call() throws InterruptedException {
-      invocations++;
-      if (invocations == interruptAttempt) {
-        throw new InterruptedException("Interrupted invocation " + invocations);
-      } else {
-        throw new RuntimeException("Throwing on invocaion " + invocations);
-      }
+    private static Stream<Arguments> unchecked() {
+        return Stream.of(
+                Arguments.of(Error.class),
+                Arguments.of(RuntimeException.class),
+                Arguments.of(NullPointerException.class));
     }
 
-    @Override
-    public void run() throws RuntimeException {
-      try {
-        call();
-      } catch(InterruptedException e) {
-        Thread.currentThread().interrupt();
-        throw new RuntimeException(e);
-      }
+    @Test
+    public void testCallWhenBlockerIsInterrupted() throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfException()
+                .withStopStrategy(StopStrategies.stopAfterAttempt(10))
+                .withBlockStrategy(new InterruptingBlockStrategy(3)).build();
+        final Thrower thrower = new Thrower(Exception.class, 5);
+        boolean interrupted = false;
+        try {
+            retryer.call(thrower);
+            fail("Should have thrown");
+        } catch (final InterruptedException e) {
+            interrupted = true;
+        }
+        // noinspection ConstantConditions
+        assertTrue(interrupted);
+        assertEquals(3, thrower.invocations);
     }
 
-  }
-
-  private class Thrower implements Callable<Void>, Runnable {
-
-    private final Class<? extends Throwable> throwableType;
-
-    private final int successAttempt;
-
-    private int invocations = 0;
-
-    Thrower(Class<? extends Throwable> throwableType, int successAttempt) {
-      this.throwableType = throwableType;
-      this.successAttempt = successAttempt;
+    @Test
+    public void testRunWhenBlockerIsInterrupted() throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfException()
+                .withStopStrategy(StopStrategies.stopAfterAttempt(10))
+                .withBlockStrategy(new InterruptingBlockStrategy(3)).build();
+        final Thrower thrower = new Thrower(Exception.class, 5);
+        boolean interrupted = false;
+        try {
+            retryer.run(thrower);
+            fail("Should have thrown");
+        } catch (final InterruptedException e) {
+            interrupted = true;
+        }
+        // noinspection ConstantConditions
+        assertTrue(interrupted);
+        assertEquals(3, thrower.invocations);
     }
 
-    @Override
-    public Void call() throws Exception {
-      invocations++;
-      if (invocations == successAttempt) {
-        return null;
-      }
-      if (Error.class.isAssignableFrom(throwableType)) {
-        throw (Error) throwable();
-      }
-      throw (Exception) throwable();
+    @Test
+    void testCallThatIsInterrupted() throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfRuntimeException()
+                .withStopStrategy(StopStrategies.stopAfterAttempt(10)).build();
+        final Interrupter thrower = new Interrupter(4);
+        boolean interrupted = false;
+        try {
+            retryer.call(thrower);
+            fail("Should have thrown");
+        } catch (final InterruptedException ignored) {
+            interrupted = true;
+        } catch (final Exception e) {
+            System.out.println(e);
+        }
+
+        // noinspection ConstantConditions
+        assertTrue(interrupted);
+        assertEquals(4, thrower.invocations);
     }
 
-    @Override
-    public void run() {
-      invocations++;
-      if (invocations == successAttempt) {
-        return;
-      }
-      if (Error.class.isAssignableFrom(throwableType)) {
-        throw (Error) throwable();
-      }
-      throw (RuntimeException) throwable();
+    @ParameterizedTest
+    @MethodSource("checkedAndUnchecked")
+    void testCallThrowsSubclassWithRetryOnException(final Class<? extends Throwable> throwable)
+            throws Exception {
+        @SuppressWarnings("unchecked")
+        final Class<? extends Throwable> superclass = (Class<? extends Throwable>) throwable.getSuperclass();
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfExceptionOfType(superclass).build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        retryer.call(thrower);
+        assertEquals(5, thrower.invocations);
     }
 
-    private Throwable throwable() {
-      try {
-        return throwableType.newInstance();
-      } catch (InstantiationException | IllegalAccessException e) {
-        throw new RuntimeException("Failed to create throwable of type " + throwableType);
-      }
+    @ParameterizedTest
+    @MethodSource("checkedAndUnchecked")
+    void testCallThrowsWhenRetriesAreStopped(final Class<? extends Throwable> throwable) throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfExceptionOfType(throwable)
+                .withStopStrategy(StopStrategies.stopAfterAttempt(3)).build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        try {
+            retryer.call(thrower);
+            fail("Should have thrown");
+        } catch (final RetryException e) {
+            assertSame(e.getCause().getClass(), throwable);
+        }
+        assertEquals(3, thrower.invocations);
     }
-  }
+
+    @ParameterizedTest
+    @MethodSource("checkedAndUnchecked")
+    void testCallThrowsWithNoRetryOnException(final Class<? extends Throwable> throwable) throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        try {
+            retryer.call(thrower);
+            fail("Should have thrown");
+        } catch (final RetryException e) {
+            assertSame(e.getCause().getClass(), throwable);
+        }
+        assertEquals(1, thrower.invocations);
+    }
+
+    @ParameterizedTest
+    @MethodSource("checkedAndUnchecked")
+    void testCallThrowsWithRetryOnException(final Class<? extends Throwable> throwable) throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfExceptionOfType(Throwable.class).build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        retryer.call(thrower);
+        assertEquals(5, thrower.invocations);
+    }
+
+    @Test
+    void testRunThatIsInterrupted() throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfRuntimeException()
+                .withStopStrategy(StopStrategies.stopAfterAttempt(10)).build();
+        final Interrupter thrower = new Interrupter(4);
+        boolean interrupted = false;
+        try {
+            retryer.run(thrower);
+            fail("Should have thrown");
+        } catch (final InterruptedException ignored) {
+            interrupted = true;
+        }
+
+        // noinspection ConstantConditions
+        assertTrue(interrupted);
+        assertEquals(4, thrower.invocations);
+    }
+
+    @ParameterizedTest
+    @MethodSource("unchecked")
+    void testRunThrowsSubclassWithRetryOnException(final Class<? extends Throwable> throwable)
+            throws Exception {
+        @SuppressWarnings("unchecked")
+        final Class<? extends Throwable> superclass = (Class<? extends Throwable>) throwable.getSuperclass();
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfExceptionOfType(superclass).build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        retryer.run(thrower);
+        assertEquals(5, thrower.invocations);
+    }
+
+    @ParameterizedTest
+    @MethodSource("unchecked")
+    void testRunThrowsWhenRetriesAreStopped(final Class<? extends Throwable> throwable) throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfExceptionOfType(throwable)
+                .withStopStrategy(StopStrategies.stopAfterAttempt(3)).build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        try {
+            retryer.run(thrower);
+            fail("Should have thrown");
+        } catch (final RetryException e) {
+            assertSame(e.getCause().getClass(), throwable);
+        }
+        assertEquals(3, thrower.invocations);
+    }
+
+    @ParameterizedTest
+    @MethodSource("unchecked")
+    void testRunThrowsWithNoRetryOnException(final Class<? extends Throwable> throwable) throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        try {
+            retryer.run(thrower);
+            fail("Should have thrown");
+        } catch (final RetryException e) {
+            assertSame(e.getCause().getClass(), throwable);
+        }
+        assertEquals(1, thrower.invocations);
+    }
+
+    @ParameterizedTest
+    @MethodSource("unchecked")
+    void testRunThrowsWithRetryOnException(final Class<? extends Throwable> throwable) throws Exception {
+        final Retryer retryer = RetryerBuilder.newBuilder().retryIfExceptionOfType(Throwable.class).build();
+        final Thrower thrower = new Thrower(throwable, 5);
+        retryer.run(thrower);
+        assertEquals(5, thrower.invocations);
+    }
 }
-
