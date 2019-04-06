@@ -13,10 +13,11 @@ Jean-Baptiste Nizet (JB). The retry project added a Gradle build for pushing it 
 exponential and Fibonacci backoff [WaitStrategies](http://rholder.github.io/guava-retrying/javadoc/2.0.0/com/github/rholder/retry/WaitStrategies.html)
 that might be useful for situations where more well-behaved service polling is preferred.
 
-## Reason for Fork
+## Reasons for Fork
 
 * Add Java 11 support
-* Make compatible with latest versions of Guava
+* Use java.util.Predicate and java.util.Function instead of Guava equivalents
+* Make compatible with latest versions of Guava (27+)
 * Fix all errorprone warnings in original source code
 
 ## Installation
@@ -67,74 +68,11 @@ dependencies {
 
 Apache Version 2.0
 
-## Quickstart
-
-Given a function that reads an integer:
-```java
-
-public int readAnInteger() throws IOException {
-   ...
-}
-```
-
-The following will retry if the result of the method is zero, if an `IOException` is thrown, or if any other `RuntimeException` is thrown from the `call()` method. It will stop after attempting to retry 3 times and throw a `RetryException` that contains information about the last failed attempt. If any other `Exception` pops out of the `call()` method it's wrapped and rethrown in an `ExecutionException`.
-
-```java
-    Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfResult(Predicates.equalTo(0))
-        .retryIfExceptionOfType(IOException.class)
-        .retryIfRuntimeException()
-        .withStopStrategy(StopStrategies.stopAfterAttempt(3))
-        .build();
-    try {
-      retryer.call(this::readAnInteger);
-    } catch (RetryException | ExecutionException e) {
-      e.printStackTrace();
-    }
-```
-
-## Exponential Backoff
-
-Create a `Retryer` that retries forever, waiting after every failed retry in increasing exponential backoff intervals until at most 5 minutes. After 5 minutes, retry from then on in 5 minute intervals.
-
-```java
-Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(IOException.class)
-        .retryIfRuntimeException()
-        .withWaitStrategy(WaitStrategies.exponentialWait(100, 5, TimeUnit.MINUTES))
-        .withStopStrategy(StopStrategies.neverStop())
-        .build();
-```
-You can read more about [exponential backoff](http://en.wikipedia.org/wiki/Exponential_backoff) and the historic role it played in the development of TCP/IP in [Congestion Avoidance and Control](http://ee.lbl.gov/papers/congavoid.pdf).
-
-## Fibonacci Backoff
-
-Create a `Retryer` that retries forever, waiting after every failed retry in increasing Fibonacci backoff intervals until at most 2 minutes. After 2 minutes, retry from then on in 2 minute intervals.
-
-```java
-Retryer retryer = RetryerBuilder.newBuilder()
-        .retryIfExceptionOfType(IOException.class)
-        .retryIfRuntimeException()
-        .withWaitStrategy(WaitStrategies.fibonacciWait(100, 2, TimeUnit.MINUTES))
-        .withStopStrategy(StopStrategies.neverStop())
-        .build();
-```
-
-Similar to the `ExponentialWaitStrategy`, the `FibonacciWaitStrategy` follows a pattern of waiting an increasing amount of time after each failed attempt.
-
-Instead of an exponential function it's (obviously) using a [Fibonacci sequence](https://en.wikipedia.org/wiki/Fibonacci_numbers) to calculate the wait time.
-
-Depending on the problem at hand, the `FibonacciWaitStrategy` might perform better and lead to better throughput than the `ExponentialWaitStrategy` - at least according to [A Performance Comparison of Different Backoff Algorithms under Different Rebroadcast Probabilities for MANETs](http://www.comp.leeds.ac.uk/ukpew09/papers/12.pdf).
-
-The implementation of `FibonacciWaitStrategy` is using an iterative version of the Fibonacci because a (naive) recursive version will lead to a [StackOverflowError](http://docs.oracle.com/javase/7/docs/api/java/lang/StackOverflowError.html) at a certain point (although very unlikely with useful parameters for retrying).
-
-Inspiration for this implementation came from [Efficient retry/backoff mechanisms](https://paperairoplane.net/?p=640).
-
 ## Documentation
 Javadoc can be found [here](http://rholder.github.io/guava-retrying/javadoc/2.0.0).
 
 ## License
-The re-retrying module is released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
+The retry module is released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## Contributors
 * Jean-Baptiste Nizet (JB)
@@ -152,5 +90,4 @@ The re-retrying module is released under version 2.0 of the [Apache License](htt
 * Kevin Conaway (kevinconaway)
 * Alberto Scotto (alb-i986)
 * Ryan Holder(rholder)
-* Robert Huffman (rhuffman)
 
