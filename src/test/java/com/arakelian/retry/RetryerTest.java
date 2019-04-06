@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
@@ -42,7 +43,7 @@ class RetryerTest {
      * Callable that throws an exception on a specified attempt (indexed starting with 1). Calls
      * before the interrupt attempt throw an Exception.
      */
-    private class Interrupter implements Callable<Void>, Runnable {
+    private static class Interrupter implements Callable<Void>, Runnable {
 
         private final int interruptAttempt;
 
@@ -98,7 +99,7 @@ class RetryerTest {
         }
     }
 
-    private class Thrower implements Callable<Void>, Runnable {
+    private static class Thrower implements Callable<Void>, Runnable {
 
         private final Class<? extends Throwable> throwableType;
 
@@ -137,8 +138,9 @@ class RetryerTest {
 
         private Throwable throwable() {
             try {
-                return throwableType.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                return throwableType.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 throw new RuntimeException("Failed to create throwable of type " + throwableType);
             }
         }

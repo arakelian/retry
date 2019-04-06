@@ -288,10 +288,9 @@ public class RetryerBuilderTest {
 
         final Retryer retryer = RetryerBuilder.newBuilder().withBlockStrategy(blockStrategy)
                 .retryIfResult(Objects::isNull).build();
-        final int retryCount = 5;
         final boolean result = retryer.call(callable);
         assertTrue(result);
-        assertEquals(counter.get(), retryCount);
+        assertEquals(5, counter.get());
     }
 
     @Test
