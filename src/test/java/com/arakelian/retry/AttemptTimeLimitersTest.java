@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import static org.junit.Assert.assertTrue;
 
@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
+import com.arakelian.retry.AttemptTimeLimiter;
+import com.arakelian.retry.AttemptTimeLimiters;
 import com.google.common.collect.Sets;
 
 public class AttemptTimeLimitersTest {

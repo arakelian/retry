@@ -47,8 +47,8 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../com/github/rholder/retry/RetryListener.html" title="interface in com.github.rholder.retry"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/github/rholder/retry/RetryListener.html" title="interface in com.arakelian.retry"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/github/rholder/retry/StopStrategies.html" target="_top">Frames</a></li>
@@ -90,7 +90,7 @@ var activeTableTab = "activeTableTab";
 <!-- ========= END OF TOP NAVBAR ========= -->
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="subTitle">com.github.rholder.retry</div>
+<div class="subTitle">com.arakelian.retry</div>
 <h2 title="Class StopStrategies" class="title">Class StopStrategies</h2>
 </div>
 <div class="contentContainer">
@@ -98,7 +98,7 @@ var activeTableTab = "activeTableTab";
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>com.github.rholder.retry.StopStrategies</li>
+<li>com.arakelian.retry.StopStrategies</li>
 </ul>
 </li>
 </ul>
@@ -109,7 +109,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public final class <span class="typeNameLabel">StopStrategies</span>
 extends java.lang.Object</pre>
-<div class="block">Factory class for <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry"><code>StopStrategy</code></a> instances.</div>
+<div class="block">Factory class for <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry"><code>StopStrategy</code></a> instances.</div>
 </li>
 </ul>
 </div>
@@ -129,19 +129,19 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/rholder/retry/StopStrategies.html#neverStop--">neverStop</a></span>()</code>
 <div class="block">Returns a stop strategy which never stops retrying.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/rholder/retry/StopStrategies.html#stopAfterAttempt-int-">stopAfterAttempt</a></span>(int&nbsp;attemptNumber)</code>
 <div class="block">Returns a stop strategy which stops after N failed attempts.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/rholder/retry/StopStrategies.html#stopAfterDelay-long-">stopAfterDelay</a></span>(long&nbsp;delayInMillis)</code>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
 <div class="block"><span class="deprecationComment">Use <a href="../../../../com/github/rholder/retry/StopStrategies.html#stopAfterDelay-long-java.util.concurrent.TimeUnit-"><code>stopAfterDelay(long, TimeUnit)</code></a> instead.</span></div>
@@ -149,7 +149,7 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a></code></td>
+<td class="colFirst"><code>static <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/github/rholder/retry/StopStrategies.html#stopAfterDelay-long-java.util.concurrent.TimeUnit-">stopAfterDelay</a></span>(long&nbsp;duration,
               java.util.concurrent.TimeUnit&nbsp;timeUnit)</code>
 <div class="block">Returns a stop strategy which stops after a given delay.</div>
@@ -183,7 +183,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>neverStop</h4>
-<pre>public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a>&nbsp;neverStop()</pre>
+<pre>public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a>&nbsp;neverStop()</pre>
 <div class="block">Returns a stop strategy which never stops retrying. It might be best to
  try not to abuse services with this kind of behavior when small wait
  intervals between retry attempts are being used.</div>
@@ -199,7 +199,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>stopAfterAttempt</h4>
-<pre>public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a>&nbsp;stopAfterAttempt(int&nbsp;attemptNumber)</pre>
+<pre>public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a>&nbsp;stopAfterAttempt(int&nbsp;attemptNumber)</pre>
 <div class="block">Returns a stop strategy which stops after N failed attempts.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -216,10 +216,10 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>stopAfterDelay</h4>
 <pre>@Deprecated
-public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a>&nbsp;stopAfterDelay(long&nbsp;delayInMillis)</pre>
+public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a>&nbsp;stopAfterDelay(long&nbsp;delayInMillis)</pre>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">Use <a href="../../../../com/github/rholder/retry/StopStrategies.html#stopAfterDelay-long-java.util.concurrent.TimeUnit-"><code>stopAfterDelay(long, TimeUnit)</code></a> instead.</span></div>
 <div class="block">Returns a stop strategy which stops after a given delay. If an
- unsuccessful attempt is made, this <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry"><code>StopStrategy</code></a> will check if the
+ unsuccessful attempt is made, this <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry"><code>StopStrategy</code></a> will check if the
  amount of time that's passed from the first attempt has exceeded the
  given delay amount. If it has exceeded this delay, then using this
  strategy causes the retrying to stop.</div>
@@ -237,11 +237,11 @@ public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.ht
 <ul class="blockListLast">
 <li class="blockList">
 <h4>stopAfterDelay</h4>
-<pre>public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry">StopStrategy</a>&nbsp;stopAfterDelay(long&nbsp;duration,
+<pre>public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry">StopStrategy</a>&nbsp;stopAfterDelay(long&nbsp;duration,
                                           @Nonnull
                                           java.util.concurrent.TimeUnit&nbsp;timeUnit)</pre>
 <div class="block">Returns a stop strategy which stops after a given delay. If an
- unsuccessful attempt is made, this <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry"><code>StopStrategy</code></a> will check if the
+ unsuccessful attempt is made, this <a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry"><code>StopStrategy</code></a> will check if the
  amount of time that's passed from the first attempt has exceeded the
  given delay amount. If it has exceeded this delay, then using this
  strategy causes the retrying to stop.</div>
@@ -280,8 +280,8 @@ public static&nbsp;<a href="../../../../com/github/rholder/retry/StopStrategy.ht
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../com/github/rholder/retry/RetryListener.html" title="interface in com.github.rholder.retry"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.github.rholder.retry"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../com/github/rholder/retry/RetryListener.html" title="interface in com.arakelian.retry"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../com/github/rholder/retry/StopStrategy.html" title="interface in com.arakelian.retry"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?com/github/rholder/retry/StopStrategies.html" target="_top">Frames</a></li>

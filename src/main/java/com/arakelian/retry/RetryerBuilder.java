@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import java.util.ArrayList;
 import java.util.List;

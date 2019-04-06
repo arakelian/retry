@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertFalse;
@@ -24,6 +24,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+
+import com.arakelian.retry.Attempt;
+import com.arakelian.retry.StopStrategies;
 
 public class StopStrategiesTest {
 

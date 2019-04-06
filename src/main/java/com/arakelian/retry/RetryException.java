@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;

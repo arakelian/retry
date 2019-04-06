@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,6 +26,9 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import com.arakelian.retry.Attempt;
+import com.arakelian.retry.WaitStrategies;
+import com.arakelian.retry.WaitStrategy;
 import com.google.common.collect.Sets;
 
 public class WaitStrategiesTest {

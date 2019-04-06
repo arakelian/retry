@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 /**
- * A strategy used to decide if a retryer must stop retrying after a failed attempt or not.
+ * A strategy used to decide how long to sleep before retrying after a failed attempt.
  *
  * @author JB
  */
-public interface StopStrategy {
+public interface WaitStrategy {
 
     /**
-     * Returns <code>true</code> if the retryer should stop retrying.
+     * Returns the time, in milliseconds, to sleep before retrying.
      *
      * @param failedAttempt
      *            the previous failed {@code Attempt}
-     * @return <code>true</code> if the retryer must stop, <code>false</code> otherwise
+     * @return the sleep time before next attempt
      */
-    boolean shouldStop(Attempt failedAttempt);
+    long computeSleepTime(Attempt failedAttempt);
 }

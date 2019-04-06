@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -29,6 +29,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.arakelian.retry.BlockStrategy;
+import com.arakelian.retry.RetryException;
+import com.arakelian.retry.Retryer;
+import com.arakelian.retry.RetryerBuilder;
+import com.arakelian.retry.StopStrategies;
 
 class RetryerTest {
 

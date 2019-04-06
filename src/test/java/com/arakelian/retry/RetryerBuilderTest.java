@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.github.rholder.retry;
+package com.arakelian.retry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,7 +35,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import com.github.rholder.retry.Retryer.RetryerCallable;
+import com.arakelian.retry.Attempt;
+import com.arakelian.retry.BlockStrategy;
+import com.arakelian.retry.RetryException;
+import com.arakelian.retry.RetryListener;
+import com.arakelian.retry.Retryer;
+import com.arakelian.retry.RetryerBuilder;
+import com.arakelian.retry.StopStrategies;
+import com.arakelian.retry.WaitStrategies;
+import com.arakelian.retry.Retryer.RetryerCallable;
 
 public class RetryerBuilderTest {
 
