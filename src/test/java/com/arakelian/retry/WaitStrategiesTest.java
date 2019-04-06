@@ -26,14 +26,11 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
-import com.arakelian.retry.Attempt;
-import com.arakelian.retry.WaitStrategies;
-import com.arakelian.retry.WaitStrategy;
 import com.google.common.collect.Sets;
 
 public class WaitStrategiesTest {
 
-    public class RetryAfterException extends RuntimeException {
+    public static class RetryAfterException extends RuntimeException {
         private final long retryAfter = 29L;
 
         long getRetryAfter() {

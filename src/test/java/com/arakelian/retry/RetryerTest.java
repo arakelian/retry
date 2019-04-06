@@ -21,21 +21,12 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import com.arakelian.retry.BlockStrategy;
-import com.arakelian.retry.RetryException;
-import com.arakelian.retry.Retryer;
-import com.arakelian.retry.RetryerBuilder;
-import com.arakelian.retry.StopStrategies;
 
 class RetryerTest {
 
@@ -78,7 +69,7 @@ class RetryerTest {
     /**
      * BlockStrategy that interrupts the thread
      */
-    private class InterruptingBlockStrategy implements BlockStrategy {
+    private static class InterruptingBlockStrategy implements BlockStrategy {
 
         private final int invocationToInterrupt;
 
@@ -144,19 +135,6 @@ class RetryerTest {
                 throw new RuntimeException("Failed to create throwable of type " + throwableType);
             }
         }
-    }
-
-    private static Stream<Arguments> checkedAndUnchecked() {
-        return Stream.concat(
-                unchecked(),
-                Stream.of(Arguments.of(Exception.class), Arguments.of(IOException.class)));
-    }
-
-    private static Stream<Arguments> unchecked() {
-        return Stream.of(
-                Arguments.of(Error.class),
-                Arguments.of(RuntimeException.class),
-                Arguments.of(NullPointerException.class));
     }
 
     @Test
