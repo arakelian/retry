@@ -36,19 +36,15 @@ wrapper {
 
 multitool {
     relocates += [
-        'com.google.common'      : 'repackaged.com.arakelian.core.${prefix}com.google.common',
-        'com.google.thirdparty'  : 'repackaged.com.arakelian.core.${prefix}com.google.thirdparty',
-        'javax.annotation'       : 'repackaged.com.arakelian.core.${prefix}javax.annotation',
-        'org.apache.commons'     : 'repackaged.com.arakelian.core.${prefix}org.apache.commons',
-        'org.objectweb.asm'      : 'repackaged.com.arakelian.core.${prefix}org.objectweb.asm',
+        'com.google.common'      : 'repackaged.com.arakelian.retry.${prefix}com.google.common',
+        'com.google.thirdparty'  : 'repackaged.com.arakelian.retry.${prefix}com.google.thirdparty',
+        'javax.annotation'       : 'repackaged.com.arakelian.retry.${prefix}javax.annotation',
+        'org.apache.commons'     : 'repackaged.com.arakelian.retry.${prefix}org.apache.commons',
+        'org.objectweb.asm'      : 'repackaged.com.arakelian.retry.${prefix}org.objectweb.asm',
     ]
     
     proguardConfiguration {
         keep includedescriptorclasses:true, 'class com.arakelian.** { *; }'
-        keep includedescriptorclasses:true, 'class **.com.google.common.collect.Lists { *; }'
-        keep includedescriptorclasses:true, 'class **.com.google.common.io.Closer { *; }'
-        
-        dontnote '**.org.apache.commons.lang3.ObjectUtils'
     }
 }
 
