@@ -1,4 +1,4 @@
-// guava-retrying
+// retry
   
 plugins {
     id 'java'

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>guava-retrying</name>
-	<comment>Arakelian Software Guava Retrying</comment>
+	<name>retry</name>
+	<comment>Arakelian Software Retry Library</comment>
 	<projects>
 	</projects>
 	<buildSpec>
