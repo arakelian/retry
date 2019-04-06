@@ -20,25 +20,63 @@
 [![License](http://img.shields.io/badge/license-apache%202-brightgreen.svg)](https://github.com/rhuffman/re-retrying/blob/master/LICENSE)
 
 ## What is this?
-The re-retrying module provides a general purpose method for retrying arbitrary Java code with specific stop, retry, and exception handling capabilities that are enhanced by Guava's predicate matching.
+The guava-retrying module provides a general purpose method for retrying arbitrary Java code with specific stop, retry, and exception handling capabilities that are enhanced by Guava's predicate matching.
 
 This is a fork of the [guava-retrying](https://github.com/rholder/guava-retrying) library by Ryan Holder (rholder), which is itself a fork of the [RetryerBuilder](http://code.google.com/p/guava-libraries/issues/detail?id=490) by Jean-Baptiste Nizet (JB). The guava-retrying project added a Gradle build for pushing it up to Maven Central, and exponential and Fibonacci backoff [WaitStrategies](http://rholder.github.io/guava-retrying/javadoc/2.0.0/com/github/rholder/retry/WaitStrategies.html) that might be useful for situations where more well-behaved service polling is preferred.
 
-Why was this fork necessary? The primary reason was to make it compatible with projects using later versions of Guava. See [this project's Wiki](https://github.com/rhuffman/re-retrying/wiki#why-fork) for more details.
+## Reason for Fork
 
-## Maven
+* Add Java 11 support
+* Make compatible with latest versions of Guava
+* Fix all errorprone warnings in original source code
+
+## Installation
+
+The library is available on [Maven Central](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.arakelian%22%20AND%20a%3A%22elastic-indexer%22).
+
+### Maven
+
+Add the following to your `pom.xml`:
+
 ```xml
-    <dependency>
-      <groupId>tech.huffman.re-retrying</groupId>
-      <artifactId>re-retrying</artifactId>
-      <version>3.0.0</version>
-    </dependency>
+<repositories>
+    <repository>
+        <id>central</id>
+        <name>Central Repository</name>
+        <url>http://repo.maven.apache.org/maven2</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+    </repository>
+</repositories>
+
+...
+
+<dependency>
+    <groupId>com.arakelian</groupId>
+    <artifactId>guava-retrying</artifactId>
+    <version>3.0.1</version>
+    <scope>test</scope>
+</dependency>
 ```
 
-## Gradle
+### Gradle
+
+Add the following to your `build.gradle`:
+
 ```groovy
-    compile "tech.huffman.re-retrying:re-retrying:3.0.0"
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testCompile 'com.arakelian:guava-retrying:3.0.1'
+}
 ```
+
+## Licence
+
+Apache Version 2.0
 
 ## Quickstart
 
@@ -105,18 +143,6 @@ Inspiration for this implementation came from [Efficient retry/backoff mechanism
 
 ## Documentation
 Javadoc can be found [here](http://rholder.github.io/guava-retrying/javadoc/2.0.0).
-
-## Building from source
-The re-retrying module uses a [Gradle](http://gradle.org)-based build system. In the instructions below, [`./gradlew`](http://vimeo.com/34436402) is invoked from the root of the source tree and serves as a cross-platform, self-contained bootstrap mechanism for the build. The only prerequisites are [Git](https://help.github.com/articles/set-up-git) and JDK 1.8+.
-
-### check out sources
-`git clone git://github.com/rhuffman/re-retrying.git`
-
-### compile and test, build all jars
-`./gradlew build`
-
-### install all jars into your local Maven cache
-`./gradlew install`
 
 ## License
 The re-retrying module is released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
