@@ -23,7 +23,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "5.0.0"
 
     // useful utilities
-    id "com.arakelian.multitool" version "2.1.0"
+    id "com.arakelian.multitool" version "2.3.0"
 }
 
 apply plugin: "com.arakelian.multitool"
