@@ -38,7 +38,7 @@ public class WaitStrategiesTest {
     }
 
     public Function<RetryAfterException, Long> customSleepFunction() {
-        return new Function<>() {
+        return new Function<RetryAfterException, Long>() {
             @Override
             public Long apply(final RetryAfterException input) {
                 return input.getRetryAfter();
@@ -58,7 +58,7 @@ public class WaitStrategiesTest {
     }
 
     public Function<RuntimeException, Long> oneMinuteSleepFunction() {
-        return new Function<>() {
+        return new Function<RuntimeException, Long>() {
             @Override
             public Long apply(final RuntimeException input) {
                 return 3600 * 1000L;
@@ -213,7 +213,7 @@ public class WaitStrategiesTest {
     }
 
     public Function<RuntimeException, Long> zeroSleepFunction() {
-        return new Function<>() {
+        return new Function<RuntimeException, Long>() {
             @Override
             public Long apply(final RuntimeException input) {
                 return 0L;

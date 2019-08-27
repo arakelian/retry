@@ -95,7 +95,7 @@ public class RetryerBuilderTest {
 
     @Test
     public void testMultipleRetryListeners() throws Exception {
-        final Callable<Boolean> callable = new Callable<>() {
+        final Callable<Boolean> callable = new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return true;
@@ -443,7 +443,7 @@ public class RetryerBuilderTest {
     }
 
     private Callable<Boolean> alwaysNull(final CountDownLatch latch) {
-        return new Callable<>() {
+        return new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 latch.countDown();
@@ -471,7 +471,7 @@ public class RetryerBuilderTest {
     }
 
     private Callable<Boolean> noIllegalStateExceptionAfter5Attempts() {
-        return new Callable<>() {
+        return new Callable<Boolean>() {
             int counter = 0;
 
             @Override
@@ -486,7 +486,7 @@ public class RetryerBuilderTest {
     }
 
     private Callable<Boolean> noIOExceptionAfter5Attempts() {
-        return new Callable<>() {
+        return new Callable<Boolean>() {
             int counter = 0;
 
             @Override
@@ -501,7 +501,7 @@ public class RetryerBuilderTest {
     }
 
     private Callable<Boolean> notNullAfter5Attempts() {
-        return new Callable<>() {
+        return new Callable<Boolean>() {
             int counter = 0;
 
             @Override
@@ -516,7 +516,7 @@ public class RetryerBuilderTest {
     }
 
     private Callable<Boolean> notNullResultOrIOExceptionOrRuntimeExceptionAfter5Attempts() {
-        return new Callable<>() {
+        return new Callable<Boolean>() {
             int counter = 0;
 
             @Override
