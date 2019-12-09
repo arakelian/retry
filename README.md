@@ -45,7 +45,7 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>com.arakelian</groupId>
     <artifactId>retry</artifactId>
-    <version>3.5.0</version>
+    <version>3.6.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -60,7 +60,7 @@ repositories {
 }
 
 dependencies {
-  testCompile 'com.arakelian:retry:3.5.0'
+  testCompile 'com.arakelian:retry:3.6.0'
 }
 ```
 
