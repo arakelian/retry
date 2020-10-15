@@ -16,13 +16,15 @@
 
 package com.arakelian.retry;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jason Dunkelberger (dirkraft)
@@ -54,10 +56,10 @@ public class AttemptTimeLimiterTest {
 
         try {
             r.call(new SleepyOut(10 * 1000L));
-            Assert.fail("Expected timeout exception");
+            fail("Expected timeout exception");
         } catch (final ExecutionException e) {
             // expected
-            Assert.assertEquals(TimeoutException.class, e.getCause().getClass());
+            assertEquals(TimeoutException.class, e.getCause().getClass());
         }
     }
 }

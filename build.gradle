@@ -8,22 +8,22 @@ plugins {
     id 'idea'
 
     // keep dependencies up-to-date!
-    id 'com.github.ben-manes.versions' version '0.28.0'
+    id 'com.github.ben-manes.versions' version '0.33.0'
 
     // useful for creating immutable java beans
     id 'org.inferred.processors' version '3.3.0'
 
     // to ensure clean code
-    id "net.ltgt.errorprone" version "0.7.1"
+    id "net.ltgt.errorprone" version "1.2.1"
 
     // for deployment to Maven Central
-    id "io.codearte.nexus-staging" version "0.21.2"
+    id "io.codearte.nexus-staging" version "0.22.0"
 
     // for building fat jar
     id "com.github.johnrengelman.shadow" version "5.2.0"
 
     // useful utilities
-    id "com.arakelian.multitool" version "2.4.0"
+    id "com.arakelian.multitool" version "3.0.3"
 }
 
 apply plugin: "com.arakelian.multitool"
@@ -31,7 +31,7 @@ apply plugin: "com.arakelian.multitool"
 group   = 'com.arakelian'
 
 wrapper { 
-    gradleVersion = '6.4.1'
+    gradleVersion = '6.6.1'
 }
 
 multitool {
@@ -64,18 +64,14 @@ dependencies {
     testCompile 'org.apache.logging.log4j:log4j-api:2.13.3'
     testCompile 'org.apache.logging.log4j:log4j-core:2.13.3'
     testCompile 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.3'
-    testCompile 'org.slf4j:jcl-over-slf4j:1.7.29'
-    testCompile 'org.slf4j:jul-to-slf4j:1.7.29'
-    compile     'org.slf4j:slf4j-api:1.7.29'
+    testCompile 'org.slf4j:jcl-over-slf4j:1.7.30'
+    testCompile 'org.slf4j:jul-to-slf4j:1.7.30'
+    compile     'org.slf4j:slf4j-api:1.7.30'
 
     // for unit testing
-    testCompile 'junit:junit:4.13'
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testCompile 'org.junit.jupiter:junit-jupiter-params:5.6.0'
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.0"
-    testRuntime "org.junit.vintage:junit-vintage-engine:5.6.0"
+    testCompile 'org.junit.jupiter:junit-jupiter:5.7.0'
     
     // we must mark these packages as provided because we want to export some test classes that require them,
     // and they need to be on the 'compile' classpath
-    provided 'junit:junit:4.13'
+    provided    'org.junit.jupiter:junit-jupiter:5.7.0'
 }
