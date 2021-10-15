@@ -98,6 +98,8 @@ public class AttemptTimeLimiters {
     }
 
     /**
+     * Set fix time limit
+     * 
      * @param duration
      *            that an attempt may persist before being circumvented
      * @param timeUnit
@@ -117,6 +119,8 @@ public class AttemptTimeLimiters {
     }
 
     /**
+     * Set no time limit
+     * 
      * @param <V>
      *            The type of the computation result.
      * @return an {@link AttemptTimeLimiter} impl which has no time limit

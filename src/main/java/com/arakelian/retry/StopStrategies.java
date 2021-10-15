@@ -95,6 +95,8 @@ public final class StopStrategies {
     }
 
     /**
+     * Stop after a delay
+     * 
      * Returns a stop strategy which stops after a given delay. If an unsuccessful attempt is made,
      * this {@link StopStrategy} will check if the amount of time that's passed from the first
      * attempt has exceeded the given delay amount. If it has exceeded this delay, then using this
@@ -106,6 +108,7 @@ public final class StopStrategies {
      * @deprecated Use {@link #stopAfterDelay(long, TimeUnit)} instead.
      */
     @Deprecated
+    @SuppressWarnings("InlineMeSuggester")
     public static StopStrategy stopAfterDelay(final long delayInMillis) {
         return stopAfterDelay(delayInMillis, TimeUnit.MILLISECONDS);
     }

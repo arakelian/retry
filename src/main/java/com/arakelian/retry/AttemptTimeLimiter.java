@@ -28,6 +28,8 @@ import java.util.concurrent.Callable;
  */
 public interface AttemptTimeLimiter<V> {
     /**
+     * Make attempt
+     * 
      * @param callable
      *            to subject to the time limit
      * @return the return of the given callable
