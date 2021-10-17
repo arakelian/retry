@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/rhuffman/re-retrying.svg?branch=master)](https://travis-ci.org/rhuffman/re-retrying)
-[![Latest Version](http://img.shields.io/badge/latest-3.0.0-brightgreen.svg)](https://github.com/rhuffman/re-retrying/releases/tag/v3.0.0-rc.1)
-[![License](http://img.shields.io/badge/license-apache%202-brightgreen.svg)](https://github.com/rhuffman/re-retrying/blob/master/LICENSE)
-
-## What is this?
+# Retry
+[![version](https://img.shields.io/maven-metadata/v.svg?label=release&metadataUrl=https://repo1.maven.org/maven2/com/arakelian/retry/maven-metadata.xml)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.arakelian%22%20AND%20a%3A%22retry%22)
+[![CI](https://github.com/arakelian/retry/actions/workflows/ci.yml/badge.svg)](https://github.com/arakelian/retry/actions/workflows/ci.yml)
 
 The retry module provides a general purpose method for retrying arbitrary Java code with specific stop, retry, 
 and exception handling capabilities that are enhanced by Guava's predicate matching.
@@ -17,7 +15,7 @@ that might be useful for situations where more well-behaved service polling is p
 
 * Add Java 11 support
 * Use java.util.Predicate and java.util.Function instead of Guava equivalents
-* Make compatible with latest versions of Guava (27+)
+* Make compatible with latest versions of Guava
 * Fix all errorprone warnings in original source code
 
 ## Installation
