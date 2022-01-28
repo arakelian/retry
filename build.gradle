@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.guardsquare:proguard-gradle:7.1.0'  // The ProGuard Gradle plugin.
+        classpath 'com.guardsquare:proguard-gradle:7.2.0'  // The ProGuard Gradle plugin.
     }
 }
 
@@ -17,7 +17,7 @@ plugins {
     id 'idea'
 
     // keep dependencies up-to-date!
-    id 'com.github.ben-manes.versions' version '0.39.0'
+    id 'com.github.ben-manes.versions' version '0.41.0'
 
     // useful for creating immutable java beans
     id 'org.inferred.processors' version '3.6.0'
@@ -29,17 +29,17 @@ plugins {
     id "io.codearte.nexus-staging" version "0.30.0"
 
     // for building fat jar
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 group   = 'com.arakelian'
-version = '5.1.0'
+version = '5.2.0'
 
 
 apply from: "core.gradle"
 
 wrapper { 
-    gradleVersion = '7.2'
+    gradleVersion = '7.3.3'
 }
 
 publishing.publications.mavenJava {
@@ -80,35 +80,32 @@ publishing.publications.mavenJava {
 }
 
 dependencies {
-    processor 'org.immutables:value:2.9.0-rc1'
+    processor 'org.immutables:value:2.9.0'
 
     // annotations
-    api 'org.immutables:value-annotations:2.9.0-rc1'
+    api 'org.immutables:value-annotations:2.9.0'
     
     // configure errorprone version
-    errorprone 'com.google.errorprone:error_prone_core:2.9.0'
+    errorprone 'com.google.errorprone:error_prone_core:2.11.0'
 
     // we want to track latest version of guava    
     shadow      'com.google.guava:guava:31.0.1-jre'
 
     // logging
-    testImplementation 'org.apache.logging.log4j:log4j-api:2.14.1'
-    testImplementation 'org.apache.logging.log4j:log4j-core:2.14.1'
-    testImplementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.14.1'
+    testImplementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    testImplementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.1'
     testImplementation 'org.slf4j:jcl-over-slf4j:1.7.32'
     testImplementation 'org.slf4j:jul-to-slf4j:1.7.32'
     api                'org.slf4j:slf4j-api:1.7.32'
 
     // for unit testing
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-    
-    // we must mark these packages as provided because we want to export some test classes that require them,
-    // and they need to be on the 'compile' classpath
-    //testImplementation    'org.junit.jupiter:junit-jupiter:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 }
 
 shadowJar {
-    //task.mergeServiceFiles()
+    // need to update any META-INF/services to relocated class names
+    mergeServiceFiles()
 
     // we don't want poms for third-party stuff
     exclude 'META-INF/maven/**/*'
