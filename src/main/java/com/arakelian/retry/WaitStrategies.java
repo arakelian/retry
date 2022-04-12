@@ -96,7 +96,8 @@ public final class WaitStrategies {
 
         @Override
         public long computeSleepTime(final Attempt failedAttempt) {
-            final double exp = Math.pow(2, failedAttempt.getAttemptNumber());
+            double attemptNumber = failedAttempt.getAttemptNumber();
+            final double exp = Math.pow(2, attemptNumber);
             long result = Math.round(multiplier * exp);
             if (result > maximumWait) {
                 result = maximumWait;
