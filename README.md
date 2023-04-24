@@ -18,6 +18,11 @@ that might be useful for situations where more well-behaved service polling is p
 * Make compatible with latest versions of Guava
 * Fix all errorprone warnings in original source code
 
+## Requirements
+
+* Versions < 6.0.0 require Java 8+
+* Version 6+ require Java 11+
+
 ## Installation
 
 The library is available on [Maven Central](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.arakelian%22%20AND%20a%3A%22retry%22).
@@ -43,7 +48,7 @@ Add the following to your `pom.xml`:
 <dependency>
     <groupId>com.arakelian</groupId>
     <artifactId>retry</artifactId>
-    <version>5.3.0</version>
+    <version>6.0.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -58,7 +63,7 @@ repositories {
 }
 
 dependencies {
-  testCompile 'com.arakelian:retry:5.3.0'
+  testCompile 'com.arakelian:retry:6.0.0'
 }
 ```
 

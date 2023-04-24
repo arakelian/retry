@@ -202,7 +202,7 @@ public final class WaitStrategies {
             Preconditions.checkArgument(minimum >= 0, "minimum must be >= 0 but is %s", minimum);
             Preconditions.checkArgument(
                     maximum > minimum,
-                    "maximum must be > minimum but maximum is %s and minimum is",
+                    "maximum must be > minimum but maximum is %s and minimum is %s",
                     maximum,
                     minimum);
 
