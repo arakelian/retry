@@ -21,7 +21,7 @@ plugins {
 }
 
 group   = 'com.arakelian'
-version = '6.0.0'
+version = '6.0.1'
 
 
 apply from: "core.gradle"
@@ -57,14 +57,6 @@ publishing.publications.mavenJava {
             url = 'https://github.com/arakelian/retry.git'
         }
     }
-	pom.withXml {
-		Node pomNode = asNode()
-		pomNode.dependencies.'*'.findAll() {
-		    it.artifactId.text() in [ 'value-annotations', 'guava', 'commons-io', 'commons-lang3' ]
-		}.each() {
-		    it.parent().remove(it)
-		}
-	}
 }
 
 dependencies {
