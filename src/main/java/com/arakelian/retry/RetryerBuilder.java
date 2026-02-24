@@ -49,7 +49,7 @@ public class RetryerBuilder<V> {
          * @param exceptionClass
          *            the exception class to match against
          */
-        public ExceptionClassPredicate(final Class<? extends Throwable> exceptionClass) {
+        ExceptionClassPredicate(final Class<? extends Throwable> exceptionClass) {
             this.exceptionClass = exceptionClass;
         }
 
@@ -79,7 +79,7 @@ public class RetryerBuilder<V> {
          * @param delegate
          *            the predicate to apply to the exception cause
          */
-        public ExceptionPredicate(final Predicate<Throwable> delegate) {
+        ExceptionPredicate(final Predicate<Throwable> delegate) {
             this.delegate = delegate;
         }
 
@@ -109,7 +109,7 @@ public class RetryerBuilder<V> {
          * @param delegate
          *            the predicate to apply to the result value
          */
-        public ResultPredicate(final Predicate<V> delegate) {
+        ResultPredicate(final Predicate<V> delegate) {
             this.delegate = delegate;
         }
 

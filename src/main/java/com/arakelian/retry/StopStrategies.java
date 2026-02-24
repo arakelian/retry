@@ -54,7 +54,7 @@ public final class StopStrategies {
          * @param maxAttemptNumber
          *            the maximum number of attempts before stopping
          */
-        public StopAfterAttemptStrategy(final int maxAttemptNumber) {
+        StopAfterAttemptStrategy(final int maxAttemptNumber) {
             Preconditions.checkArgument(
                     maxAttemptNumber >= 1,
                     "maxAttemptNumber must be >= 1 but is %s",
@@ -82,7 +82,7 @@ public final class StopStrategies {
          * @param maxDelay
          *            the maximum delay in milliseconds since the first attempt
          */
-        public StopAfterDelayStrategy(final long maxDelay) {
+        StopAfterDelayStrategy(final long maxDelay) {
             Preconditions.checkArgument(maxDelay >= 0L, "maxDelay must be >= 0 but is %s", maxDelay);
             this.maxDelay = maxDelay;
         }

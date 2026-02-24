@@ -205,16 +205,43 @@ eclipse {
 }
 
 
+// generate Eclipse .factorypath for annotation processors
+task eclipseFactoryPath {
+    description = 'Generates the Eclipse .factorypath file for annotation processors.'
+    group = 'IDE'
+
+    doLast {
+        def factorypath = new File(project.projectDir, '.factorypath')
+        def writer = new StringWriter()
+        def xml = new groovy.xml.MarkupBuilder(writer)
+        xml.doubleQuotes = true
+        xml.'factorypath' {
+            configurations.annotationProcessor.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+                'factorypathentry'(
+                    kind: 'EXTJAR',
+                    id: artifact.file.absolutePath,
+                    enabled: true,
+                    runInBatchMode: false
+                )
+            }
+        }
+        factorypath.text = writer.toString()
+        println "Generated ${factorypath}"
+    }
+}
+
 // -------------------------------------------
 //  README
 // -------------------------------------------
 
 task readme {
-    ant.replaceregexp(match:'\\<version\\>([0-9\\.]+)\\<\\/version\\>', replace:"<version>${version}</version>", flags:'g', byline:true) {
-        fileset(dir: '.', includes: 'README.md')
-    }
-    ant.replaceregexp(match:'com\\.arakelian\\:' + project.name + ':([0-9\\.]+)', replace:"com.arakelian:${project.name}:${version}", flags:'g', byline:true) {
-        fileset(dir: '.', includes: 'README.md')
+    doLast {
+        ant.replaceregexp(match:'\\<version\\>([0-9\\.]+)\\<\\/version\\>', replace:"<version>${version}</version>", flags:'g', byline:true) {
+            fileset(dir: '.', includes: 'README.md')
+        }
+        ant.replaceregexp(match:'com\\.arakelian\\:' + project.name + ':([0-9\\.]+)', replace:"com.arakelian:${project.name}:${version}", flags:'g', byline:true) {
+            fileset(dir: '.', includes: 'README.md')
+        }
     }
 }
 
