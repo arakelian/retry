@@ -23,9 +23,13 @@ import javax.annotation.concurrent.Immutable;
  */
 public final class BlockStrategies {
 
+    /**
+     * A {@link BlockStrategy} that blocks by putting the current thread to sleep.
+     */
     @Immutable
     private static class ThreadSleepStrategy implements BlockStrategy {
 
+        /** {@inheritDoc} */
         @Override
         public void block(final long sleepTime) throws InterruptedException {
             Thread.sleep(sleepTime);
@@ -43,6 +47,7 @@ public final class BlockStrategies {
         return THREAD_SLEEP_STRATEGY;
     }
 
+    /** Private constructor to prevent instantiation of this utility class. */
     private BlockStrategies() {
     }
 }

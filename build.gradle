@@ -8,13 +8,10 @@ plugins {
     id 'idea'
 
     // keep dependencies up-to-date!
-    id 'com.github.ben-manes.versions' version '0.46.0'
+    id 'com.github.ben-manes.versions' version '0.53.0'
 
-    // useful for creating immutable java beans
-    id 'org.inferred.processors' version '3.7.0'
-
-    // to ensure clean code
-    id "net.ltgt.errorprone" version "3.1.0"
+// to ensure clean code
+    id "net.ltgt.errorprone" version "5.0.0"
 
     // for deployment to Maven Central
     id "io.codearte.nexus-staging" version "0.30.0"
@@ -27,7 +24,7 @@ version = '6.0.1'
 apply from: "core.gradle"
 
 wrapper { 
-    gradleVersion = '8.1.1'
+    gradleVersion = '9.3.1'
 }
 
 publishing.publications.mavenJava {
@@ -60,25 +57,27 @@ publishing.publications.mavenJava {
 }
 
 dependencies {
-    processor 'org.immutables:value:2.9.3'
+    annotationProcessor 'org.immutables:value:2.12.1'
 
     // annotations
-    api 'org.immutables:value-annotations:2.9.3'
-    
-    // configure errorprone version
-    errorprone 'com.google.errorprone:error_prone_core:2.18.0'
+    api 'org.immutables:value-annotations:2.12.1'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
 
-    // we want to track latest version of guava    
-    api 'com.google.guava:guava:31.1-jre'
+    // configure errorprone version
+    errorprone 'com.google.errorprone:error_prone_core:2.47.0'
+
+    // we want to track latest version of guava
+    api 'com.google.guava:guava:33.5.0-jre'
 
     // logging
-    testImplementation 'org.apache.logging.log4j:log4j-api:2.20.0'
-    testImplementation 'org.apache.logging.log4j:log4j-core:2.20.0'
-    testImplementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.20.0'
-    testImplementation 'org.slf4j:jcl-over-slf4j:2.0.7'
-    testImplementation 'org.slf4j:jul-to-slf4j:2.0.7'
-    api                'org.slf4j:slf4j-api:2.0.7'
+    testImplementation 'org.apache.logging.log4j:log4j-api:2.25.3'
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.25.3'
+    testImplementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.25.3'
+    testImplementation 'org.slf4j:jcl-over-slf4j:2.0.17'
+    testImplementation 'org.slf4j:jul-to-slf4j:2.0.17'
+    api                'org.slf4j:slf4j-api:2.0.17'
 
     // for unit testing
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.14.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

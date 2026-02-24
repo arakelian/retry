@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.guardsquare:proguard-gradle:7.2.1'  // The ProGuard Gradle plugin.
+        classpath 'com.guardsquare:proguard-gradle:7.8.2'  // The ProGuard Gradle plugin.
     }
 }
 
@@ -105,6 +105,9 @@ tasks.withType(JavaCompile) { task ->
         
         // bogus warning
         options.errorprone.disable 'StringSplitter'
+
+        // we target Java 11 which doesn't support expression switches
+        options.errorprone.disable 'StatementSwitchToExpressionSwitch'
         
         // ignore all generated source folders
         options.errorprone.excludedPaths = '.*generated.*'

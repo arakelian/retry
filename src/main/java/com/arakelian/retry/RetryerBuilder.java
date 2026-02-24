@@ -33,14 +33,27 @@ import com.google.common.base.Preconditions;
  * @author Jason Dunkelberger (dirkraft)
  */
 public class RetryerBuilder<V> {
+    /**
+     * A predicate that tests whether an attempt threw an exception of a specific class.
+     *
+     * @param <V>
+     *            the type of the call return value
+     */
     private static final class ExceptionClassPredicate<V> implements Predicate<Attempt<V>> {
 
         private final Class<? extends Throwable> exceptionClass;
 
+        /**
+         * Constructs a new predicate that matches exceptions assignable to the given class.
+         *
+         * @param exceptionClass
+         *            the exception class to match against
+         */
         public ExceptionClassPredicate(final Class<? extends Throwable> exceptionClass) {
             this.exceptionClass = exceptionClass;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean test(final Attempt<V> attempt) {
             if (!attempt.hasException()) {
@@ -50,14 +63,27 @@ public class RetryerBuilder<V> {
         }
     }
 
+    /**
+     * A predicate that delegates exception testing to another predicate.
+     *
+     * @param <V>
+     *            the type of the call return value
+     */
     private static final class ExceptionPredicate<V> implements Predicate<Attempt<V>> {
 
         private final Predicate<Throwable> delegate;
 
+        /**
+         * Constructs a new predicate that delegates to the given throwable predicate.
+         *
+         * @param delegate
+         *            the predicate to apply to the exception cause
+         */
         public ExceptionPredicate(final Predicate<Throwable> delegate) {
             this.delegate = delegate;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean test(final Attempt<V> attempt) {
             if (!attempt.hasException()) {
@@ -67,14 +93,27 @@ public class RetryerBuilder<V> {
         }
     }
 
+    /**
+     * A predicate that tests whether an attempt's result satisfies a given predicate.
+     *
+     * @param <V>
+     *            the type of the call return value
+     */
     private static final class ResultPredicate<V> implements Predicate<Attempt<V>> {
 
         private final Predicate<V> delegate;
 
+        /**
+         * Constructs a new predicate that delegates to the given result predicate.
+         *
+         * @param delegate
+         *            the predicate to apply to the result value
+         */
         public ResultPredicate(final Predicate<V> delegate) {
             this.delegate = delegate;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean test(final Attempt<V> attempt) {
             if (!attempt.hasResult()) {
@@ -96,6 +135,17 @@ public class RetryerBuilder<V> {
         return new RetryerBuilder<>();
     }
 
+    /**
+     * Returns a predicate that is the logical OR of the two given predicates.
+     *
+     * @param first
+     *            the first predicate
+     * @param second
+     *            the second predicate
+     * @param <T>
+     *            the type of the input to the predicates
+     * @return a composed predicate that represents the logical OR
+     */
     public static <T> Predicate<T> or(final Predicate<T> first, final Predicate<T> second) {
         return (value) -> first.test(value) || second.test(value);
     }
@@ -112,6 +162,7 @@ public class RetryerBuilder<V> {
 
     private final List<RetryListener> listeners = new ArrayList<>();
 
+    /** Private constructor; use {@link #newBuilder()} to create instances. */
     private RetryerBuilder() {
     }
 

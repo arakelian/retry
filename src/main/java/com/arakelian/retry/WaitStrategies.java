@@ -34,15 +34,25 @@ import com.google.common.collect.Lists;
  */
 public final class WaitStrategies {
 
+    /**
+     * A {@link WaitStrategy} that computes its sleep time as the sum of multiple wait strategies.
+     */
     @Immutable
     private static final class CompositeWaitStrategy implements WaitStrategy {
         private final List<WaitStrategy> waitStrategies;
 
+        /**
+         * Constructs a composite strategy from the given list of wait strategies.
+         *
+         * @param waitStrategies
+         *            the list of strategies whose wait times will be summed
+         */
         public CompositeWaitStrategy(final List<WaitStrategy> waitStrategies) {
             Preconditions.checkState(!waitStrategies.isEmpty(), "Need at least one wait strategy");
             this.waitStrategies = waitStrategies;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long computeSleepTime(final Attempt failedAttempt) {
             long waitTime = 0L;
@@ -53,11 +63,26 @@ public final class WaitStrategies {
         }
     }
 
+    /**
+     * A {@link WaitStrategy} that computes sleep time based on the exception thrown during an
+     * attempt.
+     *
+     * @param <T>
+     *            the type of exception this strategy handles
+     */
     @Immutable
     private static final class ExceptionWaitStrategy<T extends Throwable> implements WaitStrategy {
         private final Class<T> exceptionClass;
         private final Function<T, Long> function;
 
+        /**
+         * Constructs a new strategy that applies the given function to matching exceptions.
+         *
+         * @param exceptionClass
+         *            the exception class to match
+         * @param function
+         *            the function to compute wait time from the exception
+         */
         public ExceptionWaitStrategy(
                 @Nonnull final Class<T> exceptionClass,
                 @Nonnull final Function<T, Long> function) {
@@ -65,6 +90,7 @@ public final class WaitStrategies {
             this.function = function;
         }
 
+        /** {@inheritDoc} */
         @SuppressWarnings({ "ThrowableResultOfMethodCallIgnored", "ConstantConditions", "unchecked" })
         @Override
         public long computeSleepTime(final Attempt lastAttempt) {
@@ -78,11 +104,23 @@ public final class WaitStrategies {
         }
     }
 
+    /**
+     * A {@link WaitStrategy} that sleeps for an exponentially increasing amount of time after each
+     * failed attempt.
+     */
     @Immutable
     private static final class ExponentialWaitStrategy implements WaitStrategy {
         private final long multiplier;
         private final long maximumWait;
 
+        /**
+         * Constructs a new exponential wait strategy.
+         *
+         * @param multiplier
+         *            the multiplier applied to the exponential value
+         * @param maximumWait
+         *            the maximum wait time in milliseconds
+         */
         public ExponentialWaitStrategy(final long multiplier, final long maximumWait) {
             Preconditions.checkArgument(multiplier > 0L, "multiplier must be > 0 but is %s", multiplier);
             Preconditions.checkArgument(maximumWait >= 0L, "maximumWait must be >= 0 but is %s", maximumWait);
@@ -94,6 +132,7 @@ public final class WaitStrategies {
             this.maximumWait = maximumWait;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long computeSleepTime(final Attempt failedAttempt) {
             double attemptNumber = failedAttempt.getAttemptNumber();
@@ -106,11 +145,23 @@ public final class WaitStrategies {
         }
     }
 
+    /**
+     * A {@link WaitStrategy} that sleeps for an amount of time based on the Fibonacci sequence
+     * after each failed attempt.
+     */
     @Immutable
     private static final class FibonacciWaitStrategy implements WaitStrategy {
         private final long multiplier;
         private final long maximumWait;
 
+        /**
+         * Constructs a new Fibonacci wait strategy.
+         *
+         * @param multiplier
+         *            the multiplier applied to the Fibonacci value
+         * @param maximumWait
+         *            the maximum wait time in milliseconds
+         */
         public FibonacciWaitStrategy(final long multiplier, final long maximumWait) {
             Preconditions.checkArgument(multiplier > 0L, "multiplier must be > 0 but is %s", multiplier);
             Preconditions.checkArgument(maximumWait >= 0L, "maximumWait must be >= 0 but is %s", maximumWait);
@@ -122,6 +173,7 @@ public final class WaitStrategies {
             this.maximumWait = maximumWait;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long computeSleepTime(final Attempt failedAttempt) {
             final long fib = fib(failedAttempt.getAttemptNumber());
@@ -134,6 +186,13 @@ public final class WaitStrategies {
             return result >= 0L ? result : 0L;
         }
 
+        /**
+         * Computes the nth Fibonacci number iteratively.
+         *
+         * @param n
+         *            the index in the Fibonacci sequence
+         * @return the nth Fibonacci number
+         */
         private long fib(final long n) {
             if (n == 0L) {
                 return 0L;
@@ -156,26 +215,48 @@ public final class WaitStrategies {
         }
     }
 
+    /**
+     * A {@link WaitStrategy} that sleeps for a fixed amount of time between retry attempts.
+     */
     @Immutable
     private static final class FixedWaitStrategy implements WaitStrategy {
         private final long sleepTime;
 
+        /**
+         * Constructs a new fixed wait strategy.
+         *
+         * @param sleepTime
+         *            the fixed sleep time in milliseconds
+         */
         public FixedWaitStrategy(final long sleepTime) {
             Preconditions.checkArgument(sleepTime >= 0L, "sleepTime must be >= 0 but is %s", sleepTime);
             this.sleepTime = sleepTime;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long computeSleepTime(final Attempt failedAttempt) {
             return sleepTime;
         }
     }
 
+    /**
+     * A {@link WaitStrategy} that sleeps for an incrementally increasing amount of time after each
+     * failed attempt.
+     */
     @Immutable
     private static final class IncrementingWaitStrategy implements WaitStrategy {
         private final long initialSleepTime;
         private final long increment;
 
+        /**
+         * Constructs a new incrementing wait strategy.
+         *
+         * @param initialSleepTime
+         *            the initial sleep time in milliseconds
+         * @param increment
+         *            the amount to increment the sleep time after each attempt, in milliseconds
+         */
         public IncrementingWaitStrategy(final long initialSleepTime, final long increment) {
             Preconditions.checkArgument(
                     initialSleepTime >= 0L,
@@ -185,6 +266,7 @@ public final class WaitStrategies {
             this.increment = increment;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long computeSleepTime(final Attempt failedAttempt) {
             final long result = initialSleepTime + increment * (failedAttempt.getAttemptNumber() - 1);
@@ -192,12 +274,24 @@ public final class WaitStrategies {
         }
     }
 
+    /**
+     * A {@link WaitStrategy} that sleeps for a random amount of time between a minimum and maximum
+     * duration.
+     */
     @Immutable
     private static final class RandomWaitStrategy implements WaitStrategy {
         private static final Random RANDOM = new Random();
         private final long minimum;
         private final long maximum;
 
+        /**
+         * Constructs a new random wait strategy.
+         *
+         * @param minimum
+         *            the minimum sleep time in milliseconds
+         * @param maximum
+         *            the maximum sleep time in milliseconds
+         */
         public RandomWaitStrategy(final long minimum, final long maximum) {
             Preconditions.checkArgument(minimum >= 0, "minimum must be >= 0 but is %s", minimum);
             Preconditions.checkArgument(
@@ -210,6 +304,7 @@ public final class WaitStrategies {
             this.maximum = maximum;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long computeSleepTime(final Attempt failedAttempt) {
             final long rand = RANDOM.nextLong();
@@ -454,6 +549,7 @@ public final class WaitStrategies {
                 maximumTimeUnit.toMillis(maximumTime));
     }
 
+    /** Private constructor to prevent instantiation of this utility class. */
     private WaitStrategies() {
     }
 }

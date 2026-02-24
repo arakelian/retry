@@ -73,12 +73,29 @@ public final class Retryer<V> {
         }
     }
 
+    /**
+     * An {@link Attempt} implementation that represents a failed attempt where an exception was
+     * thrown.
+     *
+     * @param <R>
+     *            the type of the call return value
+     */
     @Immutable
     static final class ExceptionAttempt<R> implements Attempt<R> {
         private final ExecutionException e;
         private final long attemptNumber;
         private final long delaySinceFirstAttempt;
 
+        /**
+         * Constructs a new {@link ExceptionAttempt}.
+         *
+         * @param cause
+         *            the exception that was thrown during the attempt
+         * @param attemptNumber
+         *            the sequential number of this attempt
+         * @param delaySinceFirstAttempt
+         *            the delay in milliseconds since the first attempt
+         */
         public ExceptionAttempt(
                 final Throwable cause,
                 final long attemptNumber,
@@ -88,84 +105,115 @@ public final class Retryer<V> {
             this.delaySinceFirstAttempt = delaySinceFirstAttempt;
         }
 
+        /** {@inheritDoc} */
         @Override
         public R get() throws ExecutionException {
             throw e;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long getAttemptNumber() {
             return attemptNumber;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long getDelaySinceFirstAttempt() {
             return delaySinceFirstAttempt;
         }
 
+        /** {@inheritDoc} */
         @Override
         public Throwable getExceptionCause() throws IllegalStateException {
             return e.getCause();
         }
 
+        /** {@inheritDoc} */
         @Override
         public R getResult() throws IllegalStateException {
             throw new IllegalStateException("The attempt resulted in an exception, not in a result");
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean hasException() {
             return true;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean hasResult() {
             return false;
         }
     }
 
+    /**
+     * An {@link Attempt} implementation that represents a successful attempt where a result was
+     * returned.
+     *
+     * @param <R>
+     *            the type of the call return value
+     */
     @Immutable
     static final class ResultAttempt<R> implements Attempt<R> {
         private final R result;
         private final long attemptNumber;
         private final long delaySinceFirstAttempt;
 
+        /**
+         * Constructs a new {@link ResultAttempt}.
+         *
+         * @param result
+         *            the result returned by the attempt
+         * @param attemptNumber
+         *            the sequential number of this attempt
+         * @param delaySinceFirstAttempt
+         *            the delay in milliseconds since the first attempt
+         */
         public ResultAttempt(final R result, final long attemptNumber, final long delaySinceFirstAttempt) {
             this.result = result;
             this.attemptNumber = attemptNumber;
             this.delaySinceFirstAttempt = delaySinceFirstAttempt;
         }
 
+        /** {@inheritDoc} */
         @Override
         public R get() throws ExecutionException {
             return result;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long getAttemptNumber() {
             return attemptNumber;
         }
 
+        /** {@inheritDoc} */
         @Override
         public long getDelaySinceFirstAttempt() {
             return delaySinceFirstAttempt;
         }
 
+        /** {@inheritDoc} */
         @Override
         public Throwable getExceptionCause() throws IllegalStateException {
             throw new IllegalStateException("The attempt resulted in a result, not in an exception");
         }
 
+        /** {@inheritDoc} */
         @Override
         public R getResult() throws IllegalStateException {
             return result;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean hasException() {
             return false;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean hasResult() {
             return true;
