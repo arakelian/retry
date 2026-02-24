@@ -47,7 +47,7 @@ public final class WaitStrategies {
          * @param waitStrategies
          *            the list of strategies whose wait times will be summed
          */
-        public CompositeWaitStrategy(final List<WaitStrategy> waitStrategies) {
+        CompositeWaitStrategy(final List<WaitStrategy> waitStrategies) {
             Preconditions.checkState(!waitStrategies.isEmpty(), "Need at least one wait strategy");
             this.waitStrategies = waitStrategies;
         }
@@ -83,7 +83,7 @@ public final class WaitStrategies {
          * @param function
          *            the function to compute wait time from the exception
          */
-        public ExceptionWaitStrategy(
+        ExceptionWaitStrategy(
                 @Nonnull final Class<T> exceptionClass,
                 @Nonnull final Function<T, Long> function) {
             this.exceptionClass = exceptionClass;
@@ -121,7 +121,7 @@ public final class WaitStrategies {
          * @param maximumWait
          *            the maximum wait time in milliseconds
          */
-        public ExponentialWaitStrategy(final long multiplier, final long maximumWait) {
+        ExponentialWaitStrategy(final long multiplier, final long maximumWait) {
             Preconditions.checkArgument(multiplier > 0L, "multiplier must be > 0 but is %s", multiplier);
             Preconditions.checkArgument(maximumWait >= 0L, "maximumWait must be >= 0 but is %s", maximumWait);
             Preconditions.checkArgument(
@@ -162,7 +162,7 @@ public final class WaitStrategies {
          * @param maximumWait
          *            the maximum wait time in milliseconds
          */
-        public FibonacciWaitStrategy(final long multiplier, final long maximumWait) {
+        FibonacciWaitStrategy(final long multiplier, final long maximumWait) {
             Preconditions.checkArgument(multiplier > 0L, "multiplier must be > 0 but is %s", multiplier);
             Preconditions.checkArgument(maximumWait >= 0L, "maximumWait must be >= 0 but is %s", maximumWait);
             Preconditions.checkArgument(
@@ -228,7 +228,7 @@ public final class WaitStrategies {
          * @param sleepTime
          *            the fixed sleep time in milliseconds
          */
-        public FixedWaitStrategy(final long sleepTime) {
+        FixedWaitStrategy(final long sleepTime) {
             Preconditions.checkArgument(sleepTime >= 0L, "sleepTime must be >= 0 but is %s", sleepTime);
             this.sleepTime = sleepTime;
         }
@@ -257,7 +257,7 @@ public final class WaitStrategies {
          * @param increment
          *            the amount to increment the sleep time after each attempt, in milliseconds
          */
-        public IncrementingWaitStrategy(final long initialSleepTime, final long increment) {
+        IncrementingWaitStrategy(final long initialSleepTime, final long increment) {
             Preconditions.checkArgument(
                     initialSleepTime >= 0L,
                     "initialSleepTime must be >= 0 but is %s",
@@ -292,7 +292,7 @@ public final class WaitStrategies {
          * @param maximum
          *            the maximum sleep time in milliseconds
          */
-        public RandomWaitStrategy(final long minimum, final long maximum) {
+        RandomWaitStrategy(final long minimum, final long maximum) {
             Preconditions.checkArgument(minimum >= 0, "minimum must be >= 0 but is %s", minimum);
             Preconditions.checkArgument(
                     maximum > minimum,

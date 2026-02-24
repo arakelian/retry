@@ -57,7 +57,7 @@ public class AttemptTimeLimiters {
          * @param timeUnit
          *            the unit of the duration
          */
-        public FixedAttemptTimeLimit(final long duration, @Nonnull final TimeUnit timeUnit) {
+        FixedAttemptTimeLimit(final long duration, @Nonnull final TimeUnit timeUnit) {
             this(SimpleTimeLimiter.create(Executors.newCachedThreadPool()), duration, timeUnit);
         }
 
@@ -71,7 +71,7 @@ public class AttemptTimeLimiters {
          * @param executorService
          *            the executor service used to enforce the time limit
          */
-        public FixedAttemptTimeLimit(
+        FixedAttemptTimeLimit(
                 final long duration,
                 @Nonnull final TimeUnit timeUnit,
                 @Nonnull final ExecutorService executorService) {
