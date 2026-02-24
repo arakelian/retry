@@ -51,6 +51,8 @@ public final class Retryer<V> {
      * A {@link Callable} which wraps another {@link Callable} in order to add retrying behavior
      * from a given {@link Retryer} instance.
      *
+     * @param <X>
+     *            the type of the call return value
      * @author JB
      */
     public static class RetryerCallable<X> implements Callable<X> {

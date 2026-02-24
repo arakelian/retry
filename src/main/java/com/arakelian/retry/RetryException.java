@@ -30,7 +30,9 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class RetryException extends Exception {
 
+    /** The number of failed attempts before giving up. */
     private final int numberOfFailedAttempts;
+    /** The last failed attempt. */
     private final Attempt<?> lastFailedAttempt;
 
     /**
