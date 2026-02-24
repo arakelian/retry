@@ -35,6 +35,13 @@ import com.google.common.util.concurrent.TimeLimiter;
  */
 public class AttemptTimeLimiters {
 
+    /**
+     * An {@link AttemptTimeLimiter} that limits each attempt to a fixed duration using a
+     * {@link TimeLimiter}.
+     *
+     * @param <V>
+     *            the type of the computation result
+     */
     @Immutable
     private static final class FixedAttemptTimeLimit<V> implements AttemptTimeLimiter<V> {
 
@@ -42,10 +49,28 @@ public class AttemptTimeLimiters {
         private final long duration;
         private final TimeUnit timeUnit;
 
+        /**
+         * Constructs a new {@link FixedAttemptTimeLimit} with a default cached thread pool.
+         *
+         * @param duration
+         *            the maximum duration for each attempt
+         * @param timeUnit
+         *            the unit of the duration
+         */
         public FixedAttemptTimeLimit(final long duration, @Nonnull final TimeUnit timeUnit) {
             this(SimpleTimeLimiter.create(Executors.newCachedThreadPool()), duration, timeUnit);
         }
 
+        /**
+         * Constructs a new {@link FixedAttemptTimeLimit} with the given executor service.
+         *
+         * @param duration
+         *            the maximum duration for each attempt
+         * @param timeUnit
+         *            the unit of the duration
+         * @param executorService
+         *            the executor service used to enforce the time limit
+         */
         public FixedAttemptTimeLimit(
                 final long duration,
                 @Nonnull final TimeUnit timeUnit,
@@ -64,14 +89,22 @@ public class AttemptTimeLimiters {
             this.timeUnit = timeUnit;
         }
 
+        /** {@inheritDoc} */
         @Override
         public V call(final Callable<V> callable) throws Exception {
             return timeLimiter.callWithTimeout(callable, duration, timeUnit);
         }
     }
 
+    /**
+     * An {@link AttemptTimeLimiter} that imposes no time limit on each attempt.
+     *
+     * @param <V>
+     *            the type of the computation result
+     */
     @Immutable
     private static final class NoAttemptTimeLimit<V> implements AttemptTimeLimiter<V> {
+        /** {@inheritDoc} */
         @Override
         public V call(final Callable<V> callable) throws Exception {
             return callable.call();
@@ -129,6 +162,7 @@ public class AttemptTimeLimiters {
         return new NoAttemptTimeLimit<>();
     }
 
+    /** Private constructor to prevent instantiation of this utility class. */
     private AttemptTimeLimiters() {
     }
 }

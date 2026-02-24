@@ -29,18 +29,31 @@ import com.google.common.base.Preconditions;
  * @author JB
  */
 public final class StopStrategies {
+    /**
+     * A {@link StopStrategy} that never stops retrying.
+     */
     @Immutable
     private static final class NeverStopStrategy implements StopStrategy {
+        /** {@inheritDoc} */
         @Override
         public boolean shouldStop(final Attempt failedAttempt) {
             return false;
         }
     }
 
+    /**
+     * A {@link StopStrategy} that stops after a maximum number of attempts.
+     */
     @Immutable
     private static final class StopAfterAttemptStrategy implements StopStrategy {
         private final int maxAttemptNumber;
 
+        /**
+         * Constructs a new strategy that stops after the given number of attempts.
+         *
+         * @param maxAttemptNumber
+         *            the maximum number of attempts before stopping
+         */
         public StopAfterAttemptStrategy(final int maxAttemptNumber) {
             Preconditions.checkArgument(
                     maxAttemptNumber >= 1,
@@ -49,21 +62,32 @@ public final class StopStrategies {
             this.maxAttemptNumber = maxAttemptNumber;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean shouldStop(final Attempt failedAttempt) {
             return failedAttempt.getAttemptNumber() >= maxAttemptNumber;
         }
     }
 
+    /**
+     * A {@link StopStrategy} that stops after a maximum delay has elapsed since the first attempt.
+     */
     @Immutable
     private static final class StopAfterDelayStrategy implements StopStrategy {
         private final long maxDelay;
 
+        /**
+         * Constructs a new strategy that stops after the given delay in milliseconds.
+         *
+         * @param maxDelay
+         *            the maximum delay in milliseconds since the first attempt
+         */
         public StopAfterDelayStrategy(final long maxDelay) {
             Preconditions.checkArgument(maxDelay >= 0L, "maxDelay must be >= 0 but is %s", maxDelay);
             this.maxDelay = maxDelay;
         }
 
+        /** {@inheritDoc} */
         @Override
         public boolean shouldStop(final Attempt failedAttempt) {
             return failedAttempt.getDelaySinceFirstAttempt() >= maxDelay;
@@ -130,6 +154,7 @@ public final class StopStrategies {
         return new StopAfterDelayStrategy(timeUnit.toMillis(duration));
     }
 
+    /** Private constructor to prevent instantiation of this utility class. */
     private StopStrategies() {
     }
 }

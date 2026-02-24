@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.guardsquare:proguard-gradle:7.2.1'  // The ProGuard Gradle plugin.
+        classpath 'com.guardsquare:proguard-gradle:7.8.2'  // The ProGuard Gradle plugin.
     }
 }
 
@@ -17,17 +17,13 @@ ext {
             'classpath',
             'build',
             'minify',
-            'generatePomFileForInternalPublication',    // needed to generate internal POM
-            'publishMavenJavaPublicationToMavenLocal'   // real publication to Maven Local (~/.m2/repository)
+            'publishToMavenLocal'
         ],
         'sonatype' : [
-            'generatePomFileForInternalPublication',
-            'publishMavenJavaPublicationToOssrhRepository',
-            'closeAndReleaseRepository'
+            'publishAndReleaseToMavenCentral'
         ],
         'deploy' : [
-            'uploadArchives',
-            'closeAndReleaseRepository'
+            'publishAndReleaseToMavenCentral'
         ],
         'classpath' : [
             'cleanEclipseClasspath',
@@ -55,21 +51,6 @@ repositories {
     mavenCentral()
 }
 
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.allJava
-}
-
-task javadocJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set('javadoc')
-    from javadoc
-}
-
-task testsJar(type:Jar, dependsOn: testClasses) {
-    archiveClassifier.set('tests')
-    from sourceSets.test.output
-}
-
 test {
     // enable JUnit 5 tests
     useJUnitPlatform()
@@ -81,8 +62,8 @@ test {
 // -------------------------------------------
 
 tasks.withType(JavaCompile) { task ->
-    sourceCompatibility = 11
-    targetCompatibility = 11
+    sourceCompatibility = 21
+    targetCompatibility = 21
 
     // always UTF-8
     options.encoding = 'UTF-8'
@@ -105,6 +86,8 @@ tasks.withType(JavaCompile) { task ->
         
         // bogus warning
         options.errorprone.disable 'StringSplitter'
+
+        options.errorprone.disable 'StatementSwitchToExpressionSwitch'
         
         // ignore all generated source folders
         options.errorprone.excludedPaths = '.*generated.*'
@@ -133,53 +116,6 @@ if(plugins.hasPlugin("com.github.johnrengelman.shadow")) {
 }
 
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {           
-            from components.java
-        }
-    }
-}
-
-publishing {
-    if(project.hasProperty('nexusUsername')) {
-        repositories {
-            maven {
-                name = "ossrh"
-                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                credentials {
-                    username = project.nexusUsername
-                    password = project.nexusPassword
-                }
-            }
-        }
-    }
-
-    publications {
-        mavenJava {
-            artifact sourcesJar
-            artifact javadocJar
-            artifact testsJar
-
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-        }
-    }
-}
-
-signing {
-    sign publishing.publications.mavenJava
-}
-
-nexusStaging {
-    repositoryDescription project.name
-}
 
 
 // -------------------------------------------
