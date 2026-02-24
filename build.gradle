@@ -2,8 +2,6 @@
 
 plugins {
     id 'java-library'
-    id 'maven-publish'
-    id 'signing'
     id 'eclipse'
     id 'idea'
 
@@ -14,7 +12,7 @@ plugins {
     id "net.ltgt.errorprone" version "5.0.0"
 
     // for deployment to Maven Central
-    id "io.github.gradle-nexus.publish-plugin" version "2.0.0"
+    id "com.vanniktech.maven.publish" version "0.36.0"
 }
 
 group   = 'com.arakelian'
@@ -27,7 +25,7 @@ wrapper {
     gradleVersion = '9.3.1'
 }
 
-publishing.publications.mavenJava {
+mavenPublishing {
     pom {
         name = "Retry"
         description = "General purpose method for retrying arbitrary Java code with specific stop, retry, and exception handling capabilities."
@@ -54,6 +52,9 @@ publishing.publications.mavenJava {
             url = 'https://github.com/arakelian/retry.git'
         }
     }
+
+    publishToMavenCentral()
+    signAllPublications()
 }
 
 dependencies {

@@ -17,17 +17,13 @@ ext {
             'classpath',
             'build',
             'minify',
-            'generatePomFileForInternalPublication',    // needed to generate internal POM
-            'publishMavenJavaPublicationToMavenLocal'   // real publication to Maven Local (~/.m2/repository)
+            'publishToMavenLocal'
         ],
         'sonatype' : [
-            'generatePomFileForInternalPublication',
-            'publishToSonatype',
-            'closeAndReleaseSonatypeStagingRepository'
+            'publishAndReleaseToMavenCentral'
         ],
         'deploy' : [
-            'publishToSonatype',
-            'closeAndReleaseSonatypeStagingRepository'
+            'publishAndReleaseToMavenCentral'
         ],
         'classpath' : [
             'cleanEclipseClasspath',
@@ -53,21 +49,6 @@ repositories {
 
     // use external repos as fallback
     mavenCentral()
-}
-
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.allJava
-}
-
-task javadocJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set('javadoc')
-    from javadoc
-}
-
-task testsJar(type:Jar, dependsOn: testClasses) {
-    archiveClassifier.set('tests')
-    from sourceSets.test.output
 }
 
 test {
@@ -135,62 +116,6 @@ if(plugins.hasPlugin("com.github.johnrengelman.shadow")) {
 }
 
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {           
-            from components.java
-        }
-    }
-}
-
-publishing {
-    if(project.hasProperty('nexusUsername')) {
-        repositories {
-            maven {
-                name = "ossrh"
-                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                credentials {
-                    username = project.nexusUsername
-                    password = project.nexusPassword
-                }
-            }
-        }
-    }
-
-    publications {
-        mavenJava {
-            artifact sourcesJar
-            artifact javadocJar
-            artifact testsJar
-
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-        }
-    }
-}
-
-signing {
-    sign publishing.publications.mavenJava
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            // uses default https://s01.oss.sonatype.org/service/local/
-            // override with nexusUrl and snapshotRepositoryUrl if needed
-            if(project.hasProperty('nexusUsername')) {
-                username = project.nexusUsername
-                password = project.nexusPassword
-            }
-        }
-    }
-}
 
 
 // -------------------------------------------
