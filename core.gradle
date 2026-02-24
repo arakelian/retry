@@ -22,12 +22,12 @@ ext {
         ],
         'sonatype' : [
             'generatePomFileForInternalPublication',
-            'publishMavenJavaPublicationToOssrhRepository',
-            'closeAndReleaseRepository'
+            'publishToSonatype',
+            'closeAndReleaseSonatypeStagingRepository'
         ],
         'deploy' : [
-            'uploadArchives',
-            'closeAndReleaseRepository'
+            'publishToSonatype',
+            'closeAndReleaseSonatypeStagingRepository'
         ],
         'classpath' : [
             'cleanEclipseClasspath',
@@ -179,8 +179,17 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-nexusStaging {
-    repositoryDescription project.name
+nexusPublishing {
+    repositories {
+        sonatype {
+            // uses default https://s01.oss.sonatype.org/service/local/
+            // override with nexusUrl and snapshotRepositoryUrl if needed
+            if(project.hasProperty('nexusUsername')) {
+                username = project.nexusUsername
+                password = project.nexusPassword
+            }
+        }
+    }
 }
 
 
